@@ -1,0 +1,72 @@
+\subsection{The $L_0$ Sampler}
+\label{sec:l0samp}
+For $p$ near zero, the method of precision sampling
+   becomes intractable. This is because our scaling factors are
+   $t_i^{-1/p}$ which clearly rules out $p=0$.
+   In the following we present a $L_0$ using a different approach.
+First we state the following well-known result on exact recovery of sparse vectors.
+\begin{lemma}\label{lem:sparse}
+%Let $1\le s\le n$. There is a choice $k=O(s)$ and random linear function
+%$L:\mathbb R^n\to\mathbb R^k$ (generated from $O(k\log n)$ random bits) and a
+%recovery procedure that on input $L(x)$ outputs $x'\in\mathbb R^n$ or DENSE
+%such that for any $s$-sparse vector $x$ the output is $x'=x$ with probability
+%$1$ and for any vector $x$ that is not $s$-sparse the output is DENSE with
+%probability $1-O(n^{-s})$.
+For $1\le s\le n$ and $k=O(s)$ there is a random linear function
+$L:\mathbb R^n\to\mathbb R^k$ (generated from $O(k\log n)$ random bits) and a
+recovery procedure that on input $L(x)$ outputs $x'\in\mathbb R^n$ or DENSE
+such that for any $s$-sparse vector $x$ the output is $x'=x$ with probability
+$1$ and for any vector $x$ that is not $s$-sparse the output is DENSE with
+high probability.% $1-O(n^{-s})$.
+%
+%For $1\le s\le n$ and $k=O(s)$ there is a random linear function
+%$L:\mathbb R^n\to\mathbb R^k$ (generated from $O(k\log n)$ random bits) and a
+%recovery procedure that on input $L(x)$ outputs $x'\in\mathbb R^n$ or DENSE,
+%satisfying that for any $s$-sparse $x$ the output is $x'=x$ with
+%probability $1$, otherwise the output is DENSE with
+%high probability.
+%-Mert: Here 'otherwise' does not look right, so I reverted to the previous statement.
+\end{lemma}
+
+\begin{theorem}\label{l0}
+There exists a zero relative error $L_0$ sampler which
+ uses $O(\log^2 n\log(1/\delta))$ bits and outputs a 
+ coordinate $i\in[n]$ with probability at least $1-\delta$.
+\end{theorem}
+\begin{proof} We first present our algorithm assuming a random oracle, and
+  then we remove this assumption through the use of the pseudo-random
+  generator of Nisan \cite{Nisan}. Let $I_k$ for $k=1,\ldots,\lfloor\log
+  n\rfloor$ be subsets of $[n]$ of size $2^k$ chosen uniformly at random and
+  $I_0=[n]$. For each
+  $k$ we run the sparse recovery procedure of
+  Lemma \ref{lem:sparse} on the vector $x$ restricted to the coordinates in
+  $I_k$ with $s$ set to $\lceil4\log(1/\delta)\rceil$. We return a uniform
+  random non-zero coordinate from the first recovery that gives a non-zero
+  $s$-sparse vector. The algorithm fails if each recovery algorithm returns
+  zero or DENSE.
+
+  Let $J$ be the set of coordinates $i$ with $x_i\ne0$ (the support of $x$).
+  Disregarding the low probability error of the procedure in
+  Lemma~\ref{lem:sparse} this procedure returns each index $i\in J$ with equal
+  probability and never returns an index outside $J$. To bound the failure
+  probability we observe that for $|J|\le s$ failure is not possible, while for
+  $|J|>s$ one has $k\in[\lfloor\log n\rfloor]$ such that $\E[|I_k\cap
+  J|]=2^k|J|/n$ is between $s/3$ and $2s/3$. For this $k$ alone $1\le|I_k\cap
+  J|\le s$ is satisfied with probability at least $1-\delta$ by the Chernoff
+  bound limiting failure probability by $\delta$.
+
+  To get rid of the random oracle we use Nisan's generator \cite{Nisan} that
+  produces the random bits for the algorithm (including the ones describing
+  $I_k$ and the ones for the eventual random choice from $I_k\cap J$) from an
+  $O(\log^2 n)$ length seed. It fools every logspace tester including the one
+  that tests for a fixed set $J\subseteq[n]$ and $i\in[n]$ if the algorithm
+  (assuming correct reconstruction) would return $i$. Thus this version of the
+  algorithm, now using $O(\log^2n)$ random bits and $O(\log^2\log(1/\delta))$
+  total space, is also a zero relative error $L_0$-sampler with failure
+  probability bounded by $\delta+O(n^{-c})$.
+\end{proof}
+
+As we will see in Theorem~\ref{lpl}, this space bound is also tight for
+$\delta$ a constant and better sampling is not possible even if we allow
+constant relative error or a small overall distance of the output from the
+$L_0$ distribution.

@@ -1,0 +1,263 @@
+% !TeX root = main.tex
+\section{The $L_p$ Sampler}
+\label{sec:lpsamp}
+In this section, we present our $L_p$ sampler algorithm. In the following,
+we assume  $p \in (0,2)$. This particular method does not seem to be
+applicable for the $p=2$ case and we know of no $O(\log^2 n)$ space
+$L_2$-sampling algorithm. We treat the $p=0$ case separately later.
+
+We start by stating the properties of the two streaming algorithms we are
+going to use. Both are based on maintaining $L(x)$
+for a well chosen random linear map
+$L:\mathbb R^n\to\mathbb R^{n'}$ with $n'<n$.
+
+The {\em count-sketch} algorithm \cite{CharikarCF04} is so simple we cannot resist the
+temptation to define it here. For parameter $m$, the count-sketch algorithm
+works as follows. It selects independent samples $h_j:[n]\to[6m]$ and
+$g_j:[n]\to\{1,-1\}$ from pairwise independent uniform hash families for
+$j\in[l]$ and $l=O(\log n)$. It computes the following linear function of $x$
+for $j\in[l]$ and $k\in[6m]$:
+$y_{k,j}=\sum_{i\in[n],h_j(i)=k}g_j(i)x_i$. Finally it outputs
+$x^*\in\mathbb R^n$ as an approximation of $x$ with
+$x^*_i=\hbox{median}(g_j(i)y_{h(i),j}:j\in[l])$ for $i\in[n]$.
+
+The performance guarantee of the count-sketch algorithm is as follows.
+(For a compact proof see a recent survey by Gilbert and Indyk \cite{GilbertI10}.) 
+
+\begin{lemma}\label{c-s}{\rm\cite{CharikarCF04}}
+For any $x\in\mathbb R^n$ and $m\ge1$ we have
+$|x_i-x^*_i|\le\err_2^m(x)/m^{1/2}$
+for all $i\in[n]$ with high probability,
+where $x^*$ is the output of the count-sketch algorithm with parameter $m$.
+As a consequence we also have
+$$\err_2^m(x)\le\|x-\hat x\|_2\le10\err_2^m(x)$$
+with high probability, where $\hat x$ is the
+$m$-sparse vector best approximating $x^*$ (i.e., $\hat x_i=x^*_i$ for the
+$m$ coordinates $i$ with $|x^*_i|$ highest and is $\hat x_i=0$ for the
+remaining $n-m$ coordinates).
+\end{lemma}
+
+We will also need the following result for the estimation of $L_p$ norms.
+
+\begin{lemma}\label{norm}{\rm\cite{KaneNPW}}
+For any $p\in(0,2]$ there is a streaming algorithm based on a random linear
+map $L:\mathbb R^n\to\mathbb R^l$ with $l=O(\log n)$ that outputs a value $r$
+computed solely from $L(x)$ that satisfies
+$\|x\|_p\le r\le2\|x\|_p$
+with high probability.
+\end{lemma}
+
+Our streaming algorithm on Figure~1 makes use of a single count-sketch and two
+norm estimate algorithms. The count-sketch is for the randomly scaled version
+$z$ of the vector $x$. One of the norm approximation algorithms is for
+$\|x\|_p$, the other one approximates $\err_2^m(z)$ through the almost equal
+value $\|z-\hat z\|_2$. A standard $L_2$ approximation for $z$ works if we
+modify $z$ by subtracting $\hat z$ in the recovery stage. One can get
+arbitrary good approximations of $\err_2^m(x)$ this way.
+
+\begin{figure}
+\fontsize{9}{11}
+  \selectfont
+\fbox{
+\begin{minipage}[b]{.95\textwidth}
+
+{\bf Initialization Stage:} \\
+1. For $0<p<2$, $p\ne1$ set $k=10\lceil1/|p-1|\rceil$ and
+$m=O(\epsilon^{-\max(0,p-1)})$ with a large\\
+~~~~~~~~~~~~~ enough constant factor.\\
+2. For $p=1$ set $k=m=O(\log(1/\epsilon))$ with a large enough constant factor.\\
+3. Set $\beta=\epsilon^{1-1/p}$ and $l=O(\log n)$ with a large enough constant factor.\\
+4. Select $k$-wise independent uniform scaling factors
+$t_i\in[0,1]$ for $i\in[n]$.\\
+5. Select the appropriate random linear functions for the execution of the
+count-sketch\\ algorithm and $L$ and $L'$ for the norm estimations in the processing stage.\\
+
+{\bf Processing Stage:}\\
+1. Use count-sketch with parameter $m$ for the scaled vector $z\in\mathbb R^n$
+with $z_i=x_i/t_i^{1/p}$.\\
+2. Maintain a linear sketch $L(x)$ as needed for the $L_p$ norm approximation
+of $x$.\\
+3. Maintain a linear sketch $L'(z)$ as needed for the $L_2$ norm estimation of
+$z$.\\
+
+{\bf Recovery Stage:} \\
+1. Compute the output $z^*$ of the count-sketch and its best $m$-sparse
+approximation $\hat z$.\\
+2. Based on $L(x)$ compute a real $r$ with $\|x\|_p\le r\le2\|x\|_p$.\\
+3. Based on $L'(z-\hat z)=L'(z)-L'(\hat z)$ compute a real $s$ with $\|z-\hat
+z\|_2\le s\le2\|z-\hat z\|_2$.\\
+4. Find $i$ with $|z^*_i|$ maximal.\\
+5. If $s>\beta m^{1/2}r$ or $|z^*_i|<\epsilon^{-1/p}r$ output FAIL.\\
+6. Output $i$ as the sample and $z^*_it_i^{1/p}$ as an approximation for
+$x_i$.
+\end{minipage}
+}
+\label{fig:lpsampler}
+\caption{
+Our approximate $L_p$-sampler with both success probability and relative error $\Theta(\epsilon)$}
+\vspace{-5mm}
+\end{figure}
+
+First we estimate the probability that the algorithm aborts because $s>\beta
+m^{1/2}r$. This depends on the scaling that resulted in $z$ and it will be important
+for us that the bound holds even after conditioning on any one scaling factor.
+
+\begin{lemma}\label{abort}
+Conditioned on an arbitrary fixed value $t$ of $t_i$ for a single index
+$i\in[n]$ we have $\Pr[s>\beta m^{1/2}r\mid t_i=t]=O(\epsilon+n^{-c})$.
+\end{lemma}
+
+\begin{proof}
+First note that by Lemma~\ref{norm} we have $r\ge\|x\|_p$ and
+$s\le2\|z-\hat z\|_2$ with high probability. By
+Lemma~\ref{c-s} we have $\|z-\hat z\|\le10\err_2^m(z)$ also
+with high probability. We may therefore assume that all of these inequalities
+hold, and in particular
+$r\ge\|x\|_p$ and $s\le20\err_2^m(z)$. It is therefore enough to bound the
+probability that $20\err_2^m(z)>\beta m^{1/2}\|x\|_p$.
+
+For simplicity (and without loss of generality) we assume that the fixed
+scalar is $t_n=t$ and will freely use $i$ for indexes in $[n-1]$.
+
+Let $T=\beta\|x\|_p$. For each $i\in[n-1]$ we define
+two variables $z'_i$ and $z''_i$ determined by $z_i$ as follows. The indicator
+variable $z'_i=1$ if $|z_i|>T$ and $0$ otherwise. We set
+$z''_i=z_i^2(1-z'_i)/T^2\in[0,1]$. Let $S'=\sum_{i\in[n-1]}z'_i$ and
+$S''=\sum_{i\in[n-1]}z''_i$. Note that $T^2S''=\|z-w\|_2^2$, where $w$ is
+defined by $w_i=z_iz'_i$ for $i\in[n-1]$ and $w_n=z_n$. Here $w$ is
+$(S'+1)$-sparse, so we have $\err_2^m(z)\le TS''^{1/2}$ unless $S'\ge m$.
+It is therefore enough to bound the probabilities of the events
+$S'\ge m$ and $S''>m\beta^2\|x\|_p^2/(20T)^2=m/400$, each with  $O(\epsilon)$.
+
+We have $\E[z'_i]=|x_i|^p/T^p$, $\E[S']\le\beta^{-p}=\epsilon^{1-p}$. By our
+choice of $m$ and the concentration of $S'$ provided by $k$-wise independence
+we have $\Pr[S'\ge m]=O(\epsilon)$ as needed.
+The calculation for $S''$ is similar. We have
+$$\E[z''_i]<\int_{|x_i|^p/T^p}^\infty x_i^2t^{-2/p}T^{-2}dt=\frac
+p{2-p}|x_i|^pT^{-p}.$$ Thus $\E[S'']\le\frac
+p{2-p}\|x\|_p^pT^{-p}=O(\beta^{-p})=O(\epsilon^{1-p})$. Note that the $z''_i$
+are not indicator variables as the $z'_i$, but they are still $k$-wise
+independent random variables from $[0,1]$ and we can bound the probability of
+large deviation for $S''$ as we did for $S'$. This completes the proof of the
+lemma.
+\end{proof}
+
+The fact that our algorithm is an approximate $L_p$-sampler with both relative
+error and success probability $\Theta(\epsilon)$ follows from the following
+lemma. Indeed, if the probabilities were exactly $\epsilon|x_i|^p/r^p$ and
+if $\|x\|_p\le r\le2\|x\|_p$ would always hold, we
+would make no relative error and the success probability would be
+$\E[\epsilon\|x\|_p^p/r^p]\ge\epsilon/2^p$.
+
+\begin{lemma} \label{lps}
+The probability that the algorithm of Figure~1 outputs the index
+$i\in[n]$ conditioned on a fixed value for $r\ge\|x\|_p^p$ is
+$(\epsilon+O(\epsilon^2))|x_i|^p/r^p+O(n^{-c})$. The
+relative error of the estimate for $x_i$ is at most $\epsilon$ with high
+probability.
+\end{lemma}
+
+\begin{proof} Optimally, we would output $i\in[n]$ if
+$|z_i|>\epsilon^{-1/p}r$. This happens if $t_i<\epsilon|x_i|^p/r^p$ and
+has probability exactly $\epsilon|x_i|^p/r^p$. We have to estimate the
+probability that something goes wrong and the algorithm outputs $i$ when this
+simple condition is not met or vice versa.
+
+Three things can go wrong. First, if $s>m^{1/2}\beta r$ the algorithm
+fails. This is only a problem for our calculation if it should, in fact,
+output the index $i$. Lemma~\ref{abort} bounds the conditional
+probability of this happening.
+
+Having dealt with the $s>\beta m^{1/2}r$ case we may assume now $s\le\beta
+m^{1/2} r$. We also make the assumptions (high probability by
+Lemma~\ref{norm}) that
+$\|z-\hat z\|_2\le s$ and thus $\err_2^m(z)\le\|z-\hat z\|_2\le s\le\beta
+m^{1/2}r$. Finally, we also assume $|z^*_i-z_i|\le\err_2^m(z)/m^{1/2}\le\beta
+r$ for all $i\in[n]$. This is satisfied with high probability by
+Lemma~\ref{c-s}.
+
+A second source of error comes from this $\beta r$ possible difference
+between $z^*_i$ and $z_i$. This can only make a problem if $t_i$ is
+close to the threshold, namely $(\epsilon^{-1/p}+\beta)^{-p}|x_i|^p/r^p\le
+t_i\le (\epsilon^{-1/p}-\beta)^{-p}|x_i|^p/r^p$. The probability of selecting
+$t_i$ from this interval is
+$O(\beta/\epsilon^{1+1/p}|x_i|^p/r^p)=O(\epsilon^2|x_i|^p/r^p)$ as required.
+
+Finally, the third source of error comes from the possibility that $i$ should
+be output based on $|z_i|>\epsilon^{-1/p}r$, yet we output another index
+$i'\ne i$ because $z^*_{i'}\ge z^*_i$. In this case we
+must have $t_{i'}<(\epsilon^{-1/p}-\beta)^{-p}|x_i|^p/r^p$. This has
+probability $O(\epsilon|x_{i'}|^p/r^p)$. By the union bound the probability
+that such an index $i'$ exists is
+$O(\epsilon\|x\|_p^p/r^p)=O(\epsilon)$. Pairwise independence is enough to
+conclude that the same bound holds after conditioning on
+$|z_i|>\epsilon^{-1/p}r$. This finishes the proof of the first statement of
+the lemma.
+
+The algorithm only outputs an index $i$ if $s\le\beta m^{1/2}r$ and
+$|z^*_i|\le\epsilon^{-1/p}r$. The first implies that the absolute
+approximation error for $z_i$ is at most $\beta r$, while the second lower
+bounds the absolute value of the approximation itself by $\epsilon^{-1/p}r$,
+thus ensuring a $\beta\epsilon^{1/p}=\epsilon$ relative error
+approximation. Our approximation for $x_i=z_it_i^{1/p}$ is $z^*_it^{1/p}$, so
+the relative error is the same. Note that the
+inverse polynomial error probability comes from the various low probability
+events we neglected. The same is true for the additive error term in the
+distribution.
+\end{proof}
+
+\begin{theorem}\label{thm:sampler} For $\delta>0$ and $\epsilon>0$, $0<p<2$ 
+%the
+ % $O(\log(1/\delta)/\epsilon))$ repetition of the streaming algorithm in
+ % Figure~1 (taking te first non-failing output) 
+ there is an $O(\epsilon)$ relative
+  error one pass $L_p$-sampling algorithm with failing probability at most $\delta$ and having
+  low probability that the relative error of the estimate for the selected
+  coordinate is more than $\epsilon$. 
+%  
+    The algorithm uses
+  $O_p(\epsilon^{-\max(1,p)}\log^2n\log(1/\delta))$ space for $p\ne1$ while
+  for $p=1$ the space is
+  $O(\epsilon^{-1}\log(1/\epsilon)\log^2n\log(1/\delta))$.
+\end{theorem}
+
+\begin{proof}
+Using Lemma~\ref{lps} and the fact that $\|x\|_p\le r\le2\|x\|_p$ with high
+probability one obtains that the failure probability of the algorithm in Figure~1 
+is at most $1-\epsilon/2^p+O(n^{-c})$. Conditioning on
+obtaining an output, returning $i$ has probability
+$(1+O(\epsilon))|x_i|^p/\|x\|_p^p+O(n^{-c})$. Clearly, the latter statement
+remains true for any number of repetitions and the failure probability is
+raised to power $v$ for $v$ repetitions. Thus using
+$v=O(\log(1/\delta)/\epsilon)$ repetitions (taking the first non-failing output),
+ the algorithm is an $O(\epsilon)$
+relative error $\delta$ failure probability $L_p$-sampling algorithm. Here we  
+assume $v<n$ as otherwise recording the entire vector $x$ is more efficient.
+
+The low probability of more than $\epsilon$ relative error in estimating $x_i$
+also follows from Lemma~\ref{lps}.
+%
+In one round, the algorithm on Figure~1 uses
+$O(m\log n)$ counters for the count-sketch and this dominates the
+counters for the norm estimators. Using standard discretization this can be
+turned into an $O(m\log^2n)$ bit algorithm. For the discretization we also
+have to keep our scaling factors polynomial in $n$. Recall that in the
+continuous model these factors $t_i^{-1/p}$ were unbounded. But we can safely
+declare failure if $t_i^{-1}>n^c$ for some $i\in[n]$ as this has low
+probability $n^{1-c}$. We have to do the $v$ repetitions of the algorithm
+in parallel to obtain a single pass streaming algorithm. This increases the
+space to $O(vm\log^2n)$ which is the same as the one claimed in the theorem.
+\end{proof}
+
+Note that the hidden constant in the space bound of the theorem depends on
+$p$, especially that $1/(2-p)$, $1/p$ and $1/|1-p|$ factors come in. The last
+can
+always be replaced by a $\log(1/\epsilon)$ factor but the former ones are
+harder to handle. For $p=2$ an extra $\log n$ factor seems to be necessary for
+an algorithm along these lines, see \cite{AndoniKO10}.
+
+As we will see in Theorem~\ref{lpl}, our space bound is tight for $\epsilon$
+and $\delta$ constants. Note that the lower bound holds also if we only
+require the overall distribution of the $L_p$-sampler to be close to the $L_p$
+distribution as opposed to the much more strict definition of $\epsilon$
+relative error sampling.

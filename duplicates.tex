@@ -1,0 +1,141 @@
+% !TeX root = main.tex
+\section{Finding Duplicates}
+\label{sec:duplicates}
+Recall that, given a data stream of length $n+1$ over the alphabet $[n]$, finding
+duplicates problem asks to output some $a\in[n]$ that has appeared
+at least twice in the stream.
+
+%duplicates problem is defined as outputting an $a\in[n]$ such that $a$ appears
+%at least twice in the stream. Observe that by the pigeonhole principle, there
+%is always such an $a$. In \cite{Muthukrishnan}, Muthukrishnan asked whether
+%finding duplicates problem can be solved using $O(\polylog n)$ space by making
+%a constant number of passes over the data. In \cite{Tarui}, Tarui showed that
+%any $k$-pass {\em deterministic} algorithm must use $\Omega(n^{1/(2k-1)})$
+%space by a reduction from the Karchmer-Wigderson game for the majority
+%gate. Finally in  \cite{GopalanJaikumar}, the question posed by Muthukrishnan
+%was answered affirmatively by Gopalan et al., who gave a one-pass $O(\log^3
+%n)$ space randomized algorithm with constant failure rate. Here we settle the
+%one-pass complexity of the problem by giving an $O(\log^2 n)$ space algorithm
+%in the next theorem and a $\Omega(\log^2 n)$ lower bound in Theorem \ref{thm:duplb}.
+
+\begin{theorem}\label{thm:dupub}
+For any $\delta>0$ there is a $O(\log^2 n\log(1/\delta))$ space one-pass
+algorithm which, given a stream of length $n+1$ over the alphabet $[n]$,
+outputs an $i\in[n]$ or FAIL, such that the probability of outputting FAIL
+is at most $\delta$ and the algorithm outputs a letter $i\in[n]$ that is no
+duplicate with low probability.
+\end{theorem}
+\begin{proof}
+Let $x$ be an $n$-dimensional vector, initially zero at each coordinate. We
+run the $L_1$-sampler of Theorem~\ref{thm:sampler} on $x$, with both relative error
+and failure probability set to $1/2$. Before we start processing the
+stream, we subtract 1 from each coordinate of $x$; i.e., we feed the updates
+$(i,-1)$ for $i=1,\ldots n$ to the $L_1$ sampling algorithm. When a stream
+item $i\in [n]$ comes, we increase $x_i$ by 1; i.e., we generate the update
+$(i,1)$.
+
+Observe that when the stream is exhausted, we have $x_i\geq 1$ for items $i$
+that have at least two occurrences in the stream, $x_i=0$ for items that
+appear once, and $x_i=-1$ for items that do not appear.  Note that our
+$L_1$-sampler, if it does not fail, outputs an index $i$ and an approximation
+$x^*$ of $x_i$. If $x^*$ is positive, we output $i$, if it is
+negative or the $L_1$-sampler fails, we output FAIL. We have
+$\sum_{i=1}^nx_i=1$,  hence a perfect $L_1$ sample from $x$ is positive with
+more than half probability. Taking into account that our $L_1$-sampler has
+$1/2$ relative error and failure probability (and neglecting for a second the
+chance that $x^*$ has different sign from $x_i$) we conclude that we output a
+duplicate with probability at least $1/4$. The event that $x^*$ does not have
+the same sign as $x_i$ (and thus the relative error is at least 1) has low
+probability. This low probability can increase the failure probability and/or
+introduce error when we output non-duplicate items.
+
+Repeating the algorithm $O(\log(1/\delta))$ times in parallel and accepting
+the first non-failing output reduces the failure rate to
+$\delta$ but keeps the error rate low.
+\end{proof}
+
+As we will see in Theorem~\ref{thm:duplb}, our space bound is tight for
+$\delta<1$ a constant. 
+
+It is natural to study the duplicates problem for other ranges of
+parameters. Assume that we have a stream of length $n-s\le n$ over the
+alphabet $[n]$. For this problem, Gopalan et al.\ \cite{GopalanJaikumar} gave
+an $O((s+1)\log^3 n)$ bits algorithm and an $\Omega(s)$ lower bound. Here we
+give an algorithm which uses $O(s\log n+\log^2 n)$ space.
+
+\begin{theorem}\label{dups}
+For any $\delta>0$ there is an $O(s\log n+\log^2 n\log
+  1/\delta)$ space one-pass algorithm which, given a stream of length $n-s$
+  over the alphabet $[n]$, outputs NO-DUPLICATE with probability 
+  1 if the input sequence has no duplicates, otherwise 
+  it outputs $i \in [n]$ or reports FAIL. The returned number is a
+  duplicate with high probability while the probability of returning FAIL is at most $\delta$.
+\end{theorem}
+\begin{proof} Let $x$ be an $n$-dimensional vector updated
+  according to the description in the proof of Theorem \ref{thm:dupub}; i.e.,
+  $x_i$ is one less than the number of times $i$ appears in the stream. In parallel,
+   we run the exact recovery procedure from Lemma \ref{lem:sparse} with parameter $5s$
+  and the $1/2$ relative error $L_1$-sampler of 
+  Theorem~\ref{thm:sampler} with failure rate $1/2$, both on the vector $x$. If the
+  recovery algorithm returns a vector (as opposed to DENSE) we proceed 
+  and give the correct output
+  assuming we have learned the entire $x$. Otherwise we consider the output of the sampling
+  algorithm. If it is $(i,x^*)$ with $x^*>0$ we report $i$ as a duplicate
+  otherwise (if $x^*\le0$ or the sampling algorithm fails) we output FAIL.
+Define
+\begin{align*}
+\|x\|^+_1=\sum_{i:x_i>0} |x_i| & &\text{ and }& &\|x\|_1^-=\sum_{i:x_i<0} |x_i|.
+\end{align*}
+Note that $\|x\|^+_1-\|x\|_1^-=\sum_{i=1}^n x_i = -s$.
+ If $\|x\|^+_1 + \|x\|^-_1 \leq 5s$, then $x$ is $5s$-sparse, thus the sparse
+recovery procedure outputs $x$ and the algorithm makes no error. Note that the
+no repetition case falls into this category. If, however,
+$\|x\|^+_1 + \|x\|^-_1 > 5s$, then the probability that a perfect $L_1$ sample
+from $x$ is positive is $\|x\|^+_1/\|x\|_1 > 2/5$. Taking into account the
+relative error and failing probability (but ignoring the low probability event
+of the sampler outputting a wrong sign or sparse recovery algorithm reporting
+a vector), we conclude that with probability at
+least 1/10 we get a positive sample and a correct output, otherwise we output
+FAIL. The failure probability can be decreased to $\delta$ by
+$O(\log(1/\delta))$ independent repetitions of the sampler. Note that the
+sparse recovery does not have to be repeated as it has low error probability.
+
+The sparse recovery procedure takes $O(s\log n)$ bits by
+Lemma~\ref{lem:sparse} for $s>0$ (it takes $O(\log n)$ bits for $s=0$) and
+each instance of the $L_1$-sampler requires $O(\log^2 n)$ bits by
+Theorem~\ref{lps}, totaling $O(s\log n + \log^2n\log1/\delta)$ bits. 
+\end{proof}
+
+Here we do not have a matching lower bound, but only the $\Omega(\log^2n+s)$ that
+follows from the $\Omega(s)$ bound in \cite{GopalanJaikumar} and our
+$\Omega(\log^2 n)$ bound on the original version of the duplicates problem.
+
+We remark the last two theorems can be stated in a bit more general
+form. Instead of considering repetitions in data streams one can consider the
+problem of finding an index $i$ with $x_i>0$ for a vector
+$x\in\mathbb Z^n$ given by an update stream. Let
+$s=-\sum_{i=1}^nx_i$. If $s<0$, then a positive coordinate exists and the
+algorithm of Theorem~\ref{thm:dupub} finds one using $O(\log^2 n\log(1/\delta))$
+space with low error and at most $\delta$ failure probability.
+If $s\ge0$ a positive coordinate does not necessarily exist, but the algorithm
+of Theorem~\ref{dups} finds one, report none exists or fails with the error,
+failure and space bounds claimed there.
+
+Let us consider finally the version of the duplicates problem, where we have a
+stream of length $n+s>n$ over the alphabet $[n]$. Our lower and upper bounds
+are even farther in this case. A duplicate can be found using $O(\min\{\log^2n,
+(n/s)\log n\})$ bits of memory in one pass with constant probability as
+follows. If we sample a random item from the stream, it will appear again
+unless that was the last appearance of the letter. As there are at most $n$
+last appearances in the stream of length $n+s$, the probability for a uniform
+random sample to repeat later is at least $s/(n+s)$. Therefore, if $n/s < \log
+n$, we can sample $4\lceil n/s\rceil$ items from the stream uniformly at
+random and check if one of them appears again to obtain a constant error
+algorithm for finding duplicates. If on the other hand $n/s \geq \log n$, we use
+the algorithm in Theorem~\ref{thm:dupub}.
+
+Combining our lower bound for the original version of the duplicates problem 
+with the simple lower bound of  $\Omega(\log n)$, we conclude that any 
+streaming algorithm that finds a duplicate in length $n+s$ streams must use 
+$\Omega(\log^2(n/s)+ \log n)$ bits.
+

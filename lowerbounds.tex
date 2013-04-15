@@ -1,0 +1,305 @@
+% !TeX root = main.tex
+\section{Lower Bounds}
+\label{sec:lb}
+All our lower bounds follow from the augmented indexing problem. This problem
+is defined as follows. Let $k$ and $m$ be positive integers.
+The first player Alice, is given a string $x\in[k]^m$, while the second player Bob
+is given an integer $i\in [m]$ and $x_j$ for $j<i$. Alice sends a single
+message to Bob and Bob should output $x_i$. 
+
+\begin{lemma}
+[Miltersen et al.~\cite{MiltersenNSW}]
+\label{lem:ai}
+In any one-way protocol in the joint random source model with success
+probability at least $1-\delta>\frac{3}{2k}$, Alice must send a message of
+size $\Omega((1-\delta)m\log k)$.
+\end{lemma}
+
+We will use this lemma by reducing augmented indexing to other communication
+or streaming problems.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%        Subsection: Universal relation
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Universal Relation}\label{sec:ur}
+Consider the following two player communication game.
+Alice gets a string $x\in\{0,1\}^n$, Bob gets $y\in\{0,1\}^n$ with
+  the promise that $x\neq y$. The players exchange 
+  messages and the last player to receive a message must
+   output an index $i\in [n]$ such that $x_i\neq y_i$. 
+  We call this the {\em universal relation communication problem} and denote it by $\URn$.
+
+This relation has been studied in detail for deterministic communication, as 
+it naturally arises in the context of
+ Karchmer-Wigderson games \cite{KarchmerWigderson}. We note however
+ that our definition is slightly unusual: in most settings both players must
+ obtain the same index $i$ such that $x_i\neq y_i$, whereas we are satisfied
+ with the last player to receive a message learning such an $i$. Clearly, the
+ stronger requirement can be met in $\lceil\log n\rceil$ additional bits and
+ one additional round. The additional bits are needed in deterministic case
+ but we are not concerned with $O(\log n)$ terms for our bounds, so the two
+ models are almost equivalent up to the shift of one in the number of rounds.
+
+The best deterministic protocol for $\URn$ is due to 
+ Tardos and Zwick~\cite{TardosZwick}. Improving a previous result 
+ by Karchmer \cite{Karchmer}, they gave a 3 round deterministic protocol 
+ using $n+2$ bits of communication with both players learning the same index
+ $i$ and showed that $n+1$ bits is necessary for such a protocol. They also
+ gave an $n-\lfloor\log n\rfloor+2$ bit 2 round deterministic protocol for our
+ weaker version of the problem, which is also tight except for the $+2$
+ term. They also gave an $n-\lfloor\log n\rfloor+4$ bit 4 round protocol, where
+ both players find an index where $x$ and $y$ differ---but not necessarily
+ the same index. This shows that finding the same difference is harder.
+
+Let $R^k_\delta(U)$ denote the $k$-round $\delta$-error communication
+complexity of the communication problem $U$. We write $R_\delta(U)$ to denote
+the $\delta$-error communication complexity when the number of rounds is not
+bounded. The next proposition follows from similar ideas that were used in 
+Theorem~\ref{l0}. See the Appendix for a sketch of the proof.
+
+\begin{proposition}\label{thm:urub}
+It holds that $R^1_\delta(\URn)=O(\log^2 n\log\frac{1}{\delta})$ and $R^2_\delta(\URn)=O(\log n\log\frac{1}{\delta})$.
+\end{proposition}
+
+We remark that along similar lines one can find an $O(\log n \log\log n\log1/\delta )$
+space two-pass zero relative error $L_0$-sampling algorithm, by estimating  $L_0$ 
+of the vector defined by the stream in the first pass using \cite{KaneNW10}. Next
+ we will show that the above proposition is best possible up to the $O(\log\delta^{-1})$
+terms. We start with an averaging lemma. The proof can be found in the Appendix.
+
+
+\begin{lemma}\label{aver} Any protocol for $\URn$ can be turned into one that
+outputs every index $i\in[n]$ with $x_i\ne y_i$ with the same probability. The
+new protocol uses a joint random source. The number of bits sent, the number
+of rounds and the error probability does not change.
+\end{lemma}
+
+
+\begin{theorem}\label{thm:urlb}
+For any $\delta<1$ constant we have $R^1_\delta(\URn)=\Omega(\log^2 n)$ and
+$R_\delta=\Omega(\log n)$.
+\end{theorem}
+
+\begin{proof}
+The second bound comes from considering a uniform random pair $(x,y)$ with
+Hamming distance 1. Either player needs to get $\log n$ bits of information to
+learn the only index where the strings differ.
+
+To prove the first bound suppose Alice and Bob wants to
+solve the augmented indexing problem with Alice receiving $z\in[2^t]^s$ and Bob
+getting $i\in [s]$ and $z_j$ for $j<i$.
+
+Let them construct real vectors $u$ and
+$v$ as follows. Let $e_q\in\mathbb R^{2^t}$
+be the standard unit vector in the direction of coordinate $q$. Alice forms
+the vectors $w_j$ by concatenating $2^{s-j}$ copies of $e_{z_j}$, then she
+forms $u$ by concatenating these vectors $w_j$ for
+$j\in[s]$. The dimension of $u$ is $n=(2^s-1)2^t$. Bob
+obtains $v$ by concatenating the same vectors $w_j$ for $j\in[i-1]$ (these are
+known to him) and then
+concatenating enough zeros to reach the same dimension
+$n$.
+
+Now Alice and Bob perform the $R^1_\delta(\URn)$ length
+$\delta$ error one round protocol for $\URn$. By Lemma~\ref{aver} we
+may assume the protocol returns a uniform random index where $u$ and $v$
+differ. Note that each such index reveals one coordinate $z_j\in[2^t]$ to Bob
+for $j\ge i$. As $z_j$ is revealed by $2^{s-j}$ such indices more than half the
+time when the $\URn$ protocol does not err Bob learns the correct value of
+$z_i$. This yields a $R^1_\delta(\URn)$ length one way protocol for augmented
+indexing with error probability $(1+\delta)/2$. By Lemma~\ref{lem:ai} we have
+$R^1_\delta(\URn)=\Omega(st)$. Choosing $s=t$ proves the theorem.
+\end{proof}
+
+\subsection{Finding Duplicates}\label{sec:dublb}
+\begin{theorem}\label{thm:duplb}
+Any one-pass streaming algorithm that outputs a duplicate with constant
+probability  uses $\Omega(\log^2 n)$ space. This remains true even if the
+stream is not allowed to have an element repeated more than twice. 
+\end{theorem}
+\begin{proof}
+We show our claim by a reduction from the universal relation. Each of
+ Alice and Bob is given a binary string of length $n$, respectively $x$ 
+and $y$. Further, the players are guaranteed that $x\neq y$. Alice 
+sends a message to Bob, after which Bob must output an index 
+$i\in[n]$ such that $x_i\neq y_i$. By Theorem~\ref{thm:urlb}, to solve this 
+problem with $1/2$ error probability requires $\Omega(\log^2 n)$ bits for one-way communication. 
+Alice constructs the set $S=\{2i-1+x_i\mid i\in[n]\}\subseteq[2n]$ and Bob
+constructs $T=\{2i-y_i\mid i\in[n]\}\subseteq[2n]$. Observe that $|S|=|T|=n$ 
+and $x_i\neq y_i$ if and only if either $2i$ or $2i-1$ is in both $S$ and
+$T$.
+
+Next, using the shared randomness, players pick a random subset 
+$P$ of $[2n]$ of size $n$. We have
+$$\Pr[|S\cap P| + |T\cap P|\geq n+1]>1/8.$$
+To see this let $i\in S\cap T$ and $j\in[2n]\setminus(S\cap T)$. We have
+$|P\cap\{i,j\}|=1$ with probability more than $1/2$. The sets $P$ satisfying
+this can be partitioned into classes of size four by putting $Q\cup\{i\}$,
+$Q\cup\{j\}$ and their complements in the same class for any
+$Q\subseteq[2n]\setminus\{i,j\}$, $|Q|=n-1$. Clearly, at least one of the four
+sets $P$ in each class satisfies $|S\cap P|+|T\cap P|>n$.
+
+Given a streaming 
+algorithm $A$ for finding duplicates, Alice feeds the elements of 
+$S\cap P$ to $A$ and sends the memory contents over to Bob, 
+along with the integer $|S\cap P|$. If $|S\cap P|+|T\cap P|<n+1$, 
+Bob outputs FAIL. Otherwise, feeds arbitrary $n+1-|S\cap P|$ 
+elements of $T\cap P$ to $A$. Note that no element repeats more than twice.
+
+On the other hand $|P|=n$ and we always give $n+1$ elements of $P$ 
+to the algorithm. Also with constant probability, Bob finds an 
+$a\in S \cap T$, which in turn reveals an $i$ such that $x_i\neq y_i$. 
+Therefore by Theorem \ref{thm:urlb}, any algorithm for finding 
+duplicates must use $\Omega(\log^2 n)$ bits.
+\end{proof}
+
+\subsection{$L_p$-sampling}
+Our algorithm for the duplicates problem (Theorem~\ref{thm:dupub}) is based on
+$L_1$-sampling, thus the matching lower bound for the duplicates problem
+implies a similar bound for $L_1$-sampling. Here we show an $\Omega(\log^2 n)$ lower bound for $L_p$-sampling for all $p$.
+ Notice that the $L_p$ distribution corresponding to $0,\pm1$
+vectors are independent of $p$, so $p$ does not have to be specified for the
+next theorem.
+
+\begin{theorem}\label{lpl}
+Any one pass
+% approximate 
+$L_p$-sampler with an output distribution,
+whose variation distance from the $L_p$ distribution corresponding to $x$ is
+at most $1/3$, requires $\Omega(\log^2n)$ bits of memory. This holds even
+when all the coodinates of $x$
+%Here $x$ is an $n$
+%dimensional integer vector given by an update stream and 
+are
+guaranteed to be $-1$, $0$ or $1$.
+
+For constants $\delta<1$ and $\epsilon<1$ the same lower bound holds for any
+$\epsilon$ relative error $L_p$-sampler with failure probability $\delta$.
+\end{theorem}
+
+\begin{proof}
+Consider the $L_1$ sampling algorithm that we used to prove
+Theorem~\ref{thm:dupub}. Given a stream of items from $[n]$ we turned it to
+an update stream for an $n$ dimensional vector $x$ by first
+producing an update $(i,-1)$ for all $i\in[n]$ and then for any letter $i$ in
+the stream producing an update $(i,1)$. Assuming that no item appears more
+than twice in the stream all coordinates of the final vector $x$ are $-1$, $0$
+or $1$. The $L_1$ distribution for $x$ puts weight more than $1/2$ on the
+coordinates having value $1$. These are the duplicates. Thus if we have
+another algorithm such that the variation distance of its output is at most
+$1/3$ from this $L_1$ distribution, then it returns a coordinate with value 1
+with probability at least $1/6$. For an $\epsilon$ relative error $\delta$
+failure probability approximate $L_p$-sampler the same probability is at least
+$(1-\epsilon)(1-\delta)-n^{1-c}$. Finding a coordinate in $x$ with value $1$
+is the same as finding a duplicate in the original stream, so we need
+$\Omega(\log^2n)$ memory by Theorem~\ref{thm:duplb}.
+\end{proof}
+
+
+
+\subsection{Heavy Hitters}\label{sec:hh}
+The heavy hitters problem in the streaming model is defined as follows. Let
+$x$ be an $n$-dimensional integer vector given by an update stream.
+A heavy hitters algorithm with parameters $p>0$ and $\phi>0$ is
+required to output a set $S\subseteq [n]$ that contains
+all $i$ with $|x_i|\geq \phi\|x\|_p$ and no $i$ such
+that $|x_i|\leq \frac{\phi}{2}\|x\|_p$. We call such $S$ a valid heavy hitter
+set.\footnote{ In general, the parameter $\frac12\phi$
+can be replaced by any $\epsilon < \phi$. 
+ Since here our 
+focus is on lower bounds, we have simplified the definition.} 
+In this part, we show a tight lower bound for the
+ space complexity of randomized algorithms (assuming
+constant probability of error) for 
+the heavy hitter problem. First we briefly review the upper bounds.
+
+The count-median algorithm from \cite{CormodeM05} gives
+ a $O(\phi^{-1}\log^2 n)$ space upper bound for the case of $p=1$.
+Here we note the count-sketch \cite{CharikarCF04} in fact 
+gives a $O(\phi^{-p}\log^2 n)$ space upper bound for all $p \in (0,2]$.
+The case of $p=2$ easily follows from Lemma~\ref{c-s}. Let $d=\err^m_2(x)/m^{1/2}$.
+In general it holds $d \le ||x||_p/m^{1/p}$ for any
+$p\in(0,2]$. Indeed, let $H \subset [n]$ be the set of indices for which
+$ d^2=\sum_{i\in H}x_i^2/m$ and let $c=\max_{i\in H}|x_i|$. Then we have
+$||x||_p^p/m=\sum_{i\in[n]}|x_i|^p/m\ge c^p+\sum_{i\in H}|x_i|^p/m\ge
+c^p+c^{p-2}\sum_{i\in
+H}x_i^2/m=c^p+c^{p-2}d^2\ge c^p((1-p/2)+(p/2)c^{-2}d^2\ge
+c^p(c^{-2}d^2)^{p/2}=d^p.$ Therefore setting $m=1/\phi^p$ in the count-sketch
+scheme gives the desired result.
+
+
+We remark that a similar upper bound for the heavy hitter problem is 
+shown in \cite{KaneNPW} (cf. Theorem 1), albeit via different arguments.  
+ %at the cost of increasing the time to
+ %produce the heavy hitter set. 
+%For sake of completeness, we briefly describe this modified algorithm in \ref{sec:hhUB}.  
+%
+%\begin{theorem}[\cite{KaneNPW}, Theorem 1]\label{thm:hhub} Let $p\in (0,2]$ be a real.
+% There is a one-pass streaming algorithm that takes 
+% $O(\frac{1}{\phi^p}\log(n/\delta)(\log(mM)+\log\log n))$ bits of
+%  memory, and outputs a valid heavy hitter set with probability
+%   at least $1-\delta$.
+%\end{theorem}
+%
+%In \cite{KaneNPW}, 
+In the next theorem, we show that the above upper bound is tight for
+any reasonable range of parameters. Our lower bound holds even in the strict
+turnstile model and even for very short streams.
+
+\begin{theorem}\label{hhl} Let $p>0$ and $\phi\in(0,1)$ be a reals. Any one
+  pass heavy hitter algorithm in the strict turnstile model uses
+  $\Omega(\phi^{-p}\log^2n)$.
+\end{theorem}
+
+\begin{proof} Suppose there is a one pass heavy hitter algorithm for
+  parameters $p$ and $\phi$. We allow for a
+  random oracle and assume the updates are polynomially bounded in $n$ and
+  integers. We can also restrict the number of updates to be $O(\phi^{-p}\log
+  n)$ and assume all coordinates of the final vector are positive (strict
+  turnstile model). We turn this streaming algorithm into a protocol for
+  augmented indexing in a similar way as we transformed the protocol for
+  $\URn$ to a protocol for augmented indexing in the proof of
+  Theorem~\ref{thm:urlb}. The exponential growth is now achieved not by
+  repetition but by multiplying the coordinates with a growing factor.
+
+Suppose Alice and Bob wants to
+solve the augmented indexing problem and Alice receives $y\in[2^t]^s$ and Bob
+gets $i\in [s]$ and $y_j$ for $j<i$. Let them construct real vectors $u$ and
+$v$ as follows. Let $b=(1-(2\phi)^p)^{-1/p}$ and let $e_q\in\mathbb R^{2^t}$
+be the standard unit vector in the direction of coordinate $q$. Alice obtains
+$u$ by concatenating the vectors $\lceil b^{s-j}\rceil e_{y_j}$ for
+$j\in[s]$. The dimension of $u$ is $n'=s2^t$. Bob
+obtains $v$ by concatenating the same vectors for $j\in[i-1]$ and then
+concatenating enough zeros, namely $(s-i+1)2^t$, to reach the same dimension
+$n'$. Now Alice and Bob perform the heavy hitter algorithm for the vector
+$x=u-v$ as follows. Alice generates the necessary updates to increase the
+initially zero vector $x\in\mathbb Z^n$ to reach $x=u$, maintains the memory
+content throughout these updates and sends the final content to Bob. Now Bob
+generates the necessary updates to decrease $x=u$ to its final value $x=u-v$
+and maintains the memory throughout. Finally Bob learns the heavy hitter set
+$S$ the streaming algorithm produces and outputs $z\in[2^t]$ if the smallest
+index in $S$ is $(i-1)2^t+z$.
+
+We claim that the above protocol errs only if the streaming algorithm makes an
+error. Notice that all coordinates of $x_l$ of $x=u-v$ are zero except the
+ones of the form $x_{l_j}=\lceil b^{s-j}\rceil$ for $l_j=(j-1)2^t+y_j$, where
+$i\le j\le s$. Thus $x_{l_i}$ is the first non-zero coordinate. So the claim
+is true if $x_{l_i}\ge\phi\|x\|_p$. Using $\lceil v\rceil<2v$ for $v\ge1$ we
+get exactly this:
+\begin{align*}
+\phi^p\|x\|_p^p &= \phi^p\sum_{j=i}^s\lceil b^{s-j}\rceil^p\\
+&<(2\phi)^pb^{p(s-i+1)}/(b^p-1)\\
+&=b^{p(s-i)} \quad\qquad\text{(since $b^p =1/(1-(2\phi)^p)$)}\\
+&\le x_{l_i}^p
+\end{align*}
+
+Let us now choose $s=\lceil(2\phi)^{-p}\log n\rceil$ and $t=\lceil\log
+n/2\rceil$. For large enough $n$ this gives $n'=s2^t<n$ and all coordinates of
+$x$ throughout the procedure remain under $n$. Still if the streaming
+algorithm works with probability over 1/2, then  by Lemma~\ref{lem:ai} the message
+size of the devised protocol is $\Omega(st)=\Omega(\phi^{-p}\log^2n)$. This
+proves the theorem as the message size of the protocol is the same as the
+memory size of the streaming algorithm.
+\end{proof}
