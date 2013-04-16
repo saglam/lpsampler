@@ -24,7 +24,9 @@ $x^*_i=\hbox{median}(g_j(i)y_{h(i),j}:j\in[l])$ for $i\in[n]$.
 The performance guarantee of the count-sketch algorithm is as follows.
 (For a compact proof see a recent survey by Gilbert and Indyk \cite{GilbertI10}.) 
 
-\begin{lemma}\label{c-s}{\rm\cite{CharikarCF04}}
+\begin{lemma}
+[Charikar et al.~\cite{CharikarCF04}]
+\label{c-s}
 For any $x\in\mathbb R^n$ and $m\ge1$ we have
 $|x_i-x^*_i|\le\err_2^m(x)/m^{1/2}$
 for all $i\in[n]$ with high probability,
@@ -39,7 +41,9 @@ remaining $n-m$ coordinates).
 
 We will also need the following result for the estimation of $L_p$ norms.
 
-\begin{lemma}\label{norm}{\rm\cite{KaneNPW}}
+\begin{lemma}
+[Kane et al.~\cite{KaneNPW}]
+\label{norm}
 For any $p\in(0,2]$ there is a streaming algorithm based on a random linear
 map $L:\mathbb R^n\to\mathbb R^l$ with $l=O(\log n)$ that outputs a value $r$
 computed solely from $L(x)$ that satisfies

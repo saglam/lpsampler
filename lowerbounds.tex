@@ -63,6 +63,21 @@ Theorem~\ref{l0}. See the Appendix for a sketch of the proof.
 It holds that $R^1_\delta(\URn)=O(\log^2 n\log\frac{1}{\delta})$ and $R^2_\delta(\URn)=O(\log n\log\frac{1}{\delta})$.
 \end{proposition}
 
+\begin{proof}[Proof sketch] One way to deduce the one round protocol is from
+  Theorem~\ref{l0}. Alice and Bob run a single pass $L_0$-sampling algorithm
+  on $x-y$. This can be achieved by a single message from Alice to Bob
+  containing the memory after the first set of updates as in the proof of
+  Theorem~\ref{hhl}. The sample $i$ Bob finds is an (almost uniform random)
+  index with $x_i\ne y_i$.
+
+Looking more closely to this algorithm we have presented, it finds an index
+where $x$ and $y$ disagree from some set $I\subseteq[n]$ that contains at
+least one, but not too many such indices. It tries $O(\log n)$ random sets so
+that one of them works. One can obtain the two round
+protocol by finding such a set in the first round and concentrating on a
+single such set in the second round.
+\end{proof}
+
 We remark that along similar lines one can find an $O(\log n \log\log n\log1/\delta )$
 space two-pass zero relative error $L_0$-sampling algorithm, by estimating  $L_0$ 
 of the vector defined by the stream in the first pass using \cite{KaneNW10}. Next
@@ -75,7 +90,16 @@ outputs every index $i\in[n]$ with $x_i\ne y_i$ with the same probability. The
 new protocol uses a joint random source. The number of bits sent, the number
 of rounds and the error probability does not change.
 \end{lemma}
-
+\begin{proof}
+Using the joint random source the players take a uniform 
+random permutation $\pi$ of $[n]$ and use it to permute the digits of $x$ and
+  $y$. Further they take a uniform random subset $S\subseteq[n]$ and flip the
+  digits with coordinates in $S$. This requires no communication. 
+Then they run the original protocol on the modified inputs and report
+$\pi^{-1}(i)$ if the original protocol reports $i$. 
+All indices where $x$ and $y$ differ are reported with equal probability by
+symmetry.
+\end{proof}
 
 \begin{theorem}\label{thm:urlb}
 For any $\delta<1$ constant we have $R^1_\delta(\URn)=\Omega(\log^2 n)$ and
@@ -83,6 +107,64 @@ $R_\delta=\Omega(\log n)$.
 \end{theorem}
 
 \begin{proof}
+
+Let $P$ be a $\delta$-error protocol for 
+$\URn$ and let $\mu$ be the uniform 
+distribution on binary string pairs $(x,y)$ 
+of Hamming distance 1. Let $p$ be the 
+probability, when the inputs are drawn from 
+$\mu$, that the protocol terminates on 
+Alice's side with a correct answer. Let $q$ 
+be the probability, when the inputs are drawn 
+from $\mu$, that the protocol terminates on 
+Bob's side with a correct answer. Here the 
+probabilities are over both the input 
+distribution and the shared random string 
+$R$. Since the protocol has error probability 
+at most $\delta$, we have $p+q\geq 1-\delta$. 
+In particular, either $p$ or $q$ is greater 
+than $(1-\delta)/2$.
+
+If $q\geq (1-\delta)/2$, we will use $P$ to 
+transmit a $\log n$ bit integer from Alice to 
+Bob, otherwise we will use $P$ to transmit 
+such integer from Bob to Alice. Assume by 
+symmetry $q\geq (1-\delta)/2$. Given an 
+integer $j\in[n]$, Alice sets $x_j=1$ and 
+$x_i=0$ for $i\neq j$. Bob sets $y_i=0$ for 
+$i\in[n]$. Then using the shared randomness 
+players pick a length $n$ permutation $\pi$ 
+and permute their strings according to it. 
+Further they pick a length $n$ binary string 
+$r$ uniformly at random and XOR the resulting 
+strings with $r$. They run protocol $P$ on 
+the final strings. Since the final strings 
+constructed by the players are distributed 
+according to $\mu$, with probability $q$, the 
+protocol terminates on Bob's side with a 
+correct answer. When this happens the output 
+of the protocol is $\pi(i)$, as the strings 
+constructed by the players differ only in 
+this position. Hence, with probability $q$ 
+Bob learns $\pi(i)$ and he can infer $i$ 
+as he knows $\pi$.
+
+However, it is a simple fact that to transmit 
+an integer from $[n]$ with $q$  probability, 
+one needs to send $\Omega(q\log n)$ bits. To 
+see this give Alice an integer $J$ chosen 
+uniformly at random from $[n]$ and let $\Pi$ 
+be the transcript of the protocol, i.e., the 
+collection of all messages sent in each 
+round. By Fano's inequality 
+(Lemma~\ref{lem:fano}), 
+\begin{align*}
+q\log n - \BEnt(q)\leq 
+\I(J:\Pi\emid R)\leq R_\delta(\URn)
+\end{align*}
+hence, $R_\delta(\URn)\geq \frac{1}{2}
+(1-\delta)\log n -1$ as desired.
+
 The second bound comes from considering a uniform random pair $(x,y)$ with
 Hamming distance 1. Either player needs to get $\log n$ bits of information to
 learn the only index where the strings differ.
@@ -151,7 +233,7 @@ elements of $T\cap P$ to $A$. Note that no element repeats more than twice.
 On the other hand $|P|=n$ and we always give $n+1$ elements of $P$ 
 to the algorithm. Also with constant probability, Bob finds an 
 $a\in S \cap T$, which in turn reveals an $i$ such that $x_i\neq y_i$. 
-Therefore by Theorem \ref{thm:urlb}, any algorithm for finding 
+Therefore by \autoref{thm:urlb}, any algorithm for finding 
 duplicates must use $\Omega(\log^2 n)$ bits.
 \end{proof}
 
@@ -194,7 +276,7 @@ with probability at least $1/6$. For an $\epsilon$ relative error $\delta$
 failure probability approximate $L_p$-sampler the same probability is at least
 $(1-\epsilon)(1-\delta)-n^{1-c}$. Finding a coordinate in $x$ with value $1$
 is the same as finding a duplicate in the original stream, so we need
-$\Omega(\log^2n)$ memory by Theorem~\ref{thm:duplb}.
+$\Omega(\log^2n)$ memory by \autoref{thm:duplb}.
 \end{proof}
 
 

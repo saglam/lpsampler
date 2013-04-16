@@ -7,7 +7,7 @@
 \usepackage{sectsty}
 \usepackage[font=small,labelfont=small]{caption}
 \usepackage[usenames]{xcolor}
-\definecolor{Blue}{RGB}{0, 38, 135}
+\definecolor{Blue}{RGB}{0, 38, 105}
 \definecolor{Green}{RGB}{49, 127, 52}
 \usepackage{hyperref}
 \hypersetup{
@@ -44,6 +44,12 @@
 \DeclareMathOperator{\URn}{UR^n}
 \DeclareMathOperator{\polylog}{polylog}
 \DeclareMathOperator{\poly}{poly}
+\DeclareMathOperator*{\Ent}{H}
+\DeclareMathOperator*{\BEnt}{H_2}
+\DeclareMathOperator*{\I}{I}
+
+\newcommand{\dmid}{\,\|\,}
+\newcommand{\emid}{\,|\,}
 
 \def\equationautorefname{Equation}
 \def\sectionautorefname{Section}
@@ -78,35 +84,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \appendix
-
-\section{Appendix}\label{sec:appx}
-
-\subsection{Missing proofs}
-
-\begin{proof}[Proof of Proposition~\ref{thm:urub}] (sketch) One way to deduce the one round protocol is from
-  Theorem~\ref{l0}. Alice and Bob run a single pass $L_0$-sampling algorithm
-  on $x-y$. This can be achieved by a single message from Alice to Bob
-  containing the memory after the first set of updates as in the proof of
-  Theorem~\ref{hhl}. The sample $i$ Bob finds is an (almost uniform random)
-  index with $x_i\ne y_i$.
-
-Looking more closely to this algorithm we have presented, it finds an index
-where $x$ and $y$ disagree from some set $I\subseteq[n]$ that contains at
-least one, but not too many such indices. It tries $O(\log n)$ random sets so
-that one of them works. One can obtain the two round
-protocol by finding such a set in the first round and concentrating on a
-single such set in the second round.
-\end{proof}
-
-\begin{proof}[Proof of Lemma~\ref{aver}] Using the joint random source the players take a uniform random
-  permutation $\pi$ of $[n]$ and use it to permute the digits of $x$ and
-  $y$. Further they take a uniform random subset $S\subseteq[n]$ and flip the
-  digits with coordinates in $S$. This requires no communication. 
-Then they run the original protocol on the modified inputs and report
-$\pi^{-1}(i)$ if the original protocol reports $i$. 
-All indices where $x$ and $y$ differ are reported with equal probability by
-symmetry.
-\end{proof}
 
 %\subsection{Space Optimized Heavy Hitters Algorithm}\label{sec:hhUB}
 %\begin{theorem}
