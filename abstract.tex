@@ -7,12 +7,14 @@ In this paper, we present near-optimal space bounds for
 $L_p$-samplers. Given a stream of updates (additions and
 subtraction) to the coordinates of an underlying vector 
 $x \in\mathbb R^n$, a perfect $L_p$ sampler outputs the
-$i$-th coordinate with probability $|x_i|^p/\|x\|_p^p$.
+$i$-th coordinate with probability $|x_i|^p/\|x\|_p^p$ while an approximate
+$L_p$ sampler, roughly speaking, outputs the same coordiante with a probability witin the range
+$(1\pm \epsilon)|x_i|^p/\|x\|_p^p$.
 In SODA 2010, Monemizadeh and Woodruff showed polylog space
 upper bounds for approximate $L_p$-samplers and demonstrated
 various applications of them.
 %
-Very recently, Andoni, Krauthgamer and Onak improved the
+A year later, Andoni, Krauthgamer and Onak improved the
 upper bounds and gave a $O(\epsilon^{-p}\log^3 n)$ space
 $\epsilon$ relative error and constant failure rate
 $L_p$-sampler for $p\in [1,2]$.
@@ -43,5 +45,5 @@ $L_p$ sampling). This matches the space of our sampling
 algorithms for constant $\epsilon>0$. We also prove tight space 
 lower bounds for the finding duplicates and heavy hitters 
 problems. We obtain these lower bounds using reductions from 
-the communication complexity problem augmented indexing.
+the communication complexity problem Augmented Indexing.
 \end{abstract}
