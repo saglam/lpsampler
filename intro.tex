@@ -6,9 +6,9 @@ Sampling has become an indispensable tool in analysing massive data sets,
 and particularly in processing data streams. In the past decade, 
 several sampling techniques have been proposed and studied for the data stream
 model \cite{BabcockDM02,DuffieldLT07,BravermanOZ09,CormodeMYZ10,MonemizadehW10,AndoniKO10}.
-In this work, we study {\em $L_p$-samplers}, a new variant of
+In this work, we study {\em $L_p$-samplers}, a relatively new variant of
 space efficient samplers for data streams that
-was introduced by Monemizadeh and
+was formally introduced by Monemizadeh and
 Woodruff in \cite{MonemizadehW10}. 
  Roughly speaking, given a stream of updates (additions and subtraction) 
 to the coordinates of an underlying vector $x \in \mathbb R^n$,
@@ -55,7 +55,7 @@ In the case where only positive updates are allowed and $p=1$, the problem is we
    it is not clear at all how to maintain samples without keeping track of the updates
     to the individual coordinates. In fact, the question
     regarding the mere existence of such samplers was raised few years ago by Cormode,
-    Muthukrishnan, and Rozenbaum in \cite{CormodeMR05}. Last year in SODA 2010, 
+    Muthukrishnan, and Rozenbaum in \cite{CormodeMR05}. In SODA 2010, 
     Monemizadeh and Woodruff \cite{MonemizadehW10} answered this question
     affirmatively, however in an approximate sense. Before stating 
      their results we give a formal definition of 
@@ -91,7 +91,8 @@ following and ignore errors of probability $n^{-c}$.
 %\paragraph{Previous Works on $L_p$ sampling.} The authors in \cite{MonemizadehW10}, gave
 % various upper bounds for $L_p$ samplers. In particular, for
 \paragraph{Previous work.} 
-A zero relative error $L_0$-sampler which uses $O(\log^3 n)$ bits was shown in \cite{FrahlingIS05}. In \cite{MonemizadehW10}, the authors gave an $\epsilon$ relative error
+A zero relative error $L_0$-sampler which uses $O(\log^3 n)$ bits was shown in \cite{FrahlingIS05}. 
+In \cite{MonemizadehW10}, the authors gave an $\epsilon$ relative error
 $L_p$-sampler for $p \in [0,2]$ which uses $\poly(\epsilon^{-1},\log n)$ space. They also showed 
   a 2-pass $O(\polylog n)$ space zero relative error $L_p$-sampler for any $p\in [0,2]$. In addition
   to these, they demonstrated that $L_p$-samplers can be used as a black-box to obtain
@@ -119,7 +120,7 @@ $L_p$-sampler for $p \in [0,2]$ which uses $\poly(\epsilon^{-1},\log n)$ space. 
 %Since
  %  the mapping is linear, additions and subtraction from $x$ can
  %  be handled easily by storing random bits needed. 
- Here the 
+ The 
    important observation is $\Pr[t_i^{-1} \ge t] =1/t$ 
    and hence, for instance,  by replacing $t$ with 
    $\|x\|_1/|x_i|$, we get $\Pr[|z_i| \ge \|x\|_1] = |x_i|/\|x\|_1$. (In the
@@ -185,7 +186,10 @@ an $O(\log(1/\epsilon)\epsilon^{-1}\log^2n)$ space algorithm.
    The non-zero coordinates are found
    by an exact sparse recovery procedure and Nisan's PRG \cite{Nisan} 
    is applied to decrease the randomness involved.
-   Our $O(\log^2 n)$ space bound compares favorably to the previous algorithms, which use respectively $O(\log^3 n)$ space \cite{FrahlingIS05} and $\poly(\log n,\epsilon^{-1})$  space \cite{MonemizadehW10} (the latter one gives only $\epsilon$-relative error sampling).
+   Our $O(\log^2 n)$ space bound compares favorably to the previous algorithms, 
+   which use respectively $O(\log^3 n)$ space \cite{FrahlingIS05} 
+   and $\poly(\log n,\epsilon^{-1})$  space \cite{MonemizadehW10} 
+   (the latter one gives only $\epsilon$-relative error sampling).
 %In comparison with the previous $\epsilon$ relative error $L_0$-sampler
   % due to Monemizadeh et al., our algorithm gives
     %zero-relative error guarantees and the space bound is $O(\log^2 n)$ bits.
@@ -269,7 +273,7 @@ Heavy hitter algorithms have been studied extensively.
 The work of Berinde et al.\
 \cite{BerindeCIS09} gives tight lower bounds for heavy hitters under 
  insertion-only streams. We are not aware of similar works on
-general update streams, although the recent works of \cite{BaIPW10, WoodruffJ11},
+general update streams, although the works of \cite{BaIPW10, WoodruffJ11},
  where the authors show lower bounds for respectively approximate
 sparse recovery, and Johnson-Lindenstrauss transforms (via augmented indexing) is closely related.    
     
