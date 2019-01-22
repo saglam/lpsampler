@@ -112,9 +112,9 @@ $i\in[n]$ we have $\Pr[s>\beta m^{1/2}r\mid t_i=t]=O(\epsilon+n^{-c})$.
 \end{lemma}
 
 \begin{proof}
-First note that by Lemma~\ref{norm} we have $r\ge\|x\|_p$ and
+First note that by \autoref{norm} we have $r\ge\|x\|_p$ and
 $s\le2\|z-\hat z\|_2$ with high probability. By
-Lemma~\ref{c-s} we have $\|z-\hat z\|\le10\err_2^m(z)$ also
+\autoref{c-s} we have $\|z-\hat z\|\le10\err_2^m(z)$ also
 with high probability. We may therefore assume that all of these inequalities
 hold, and in particular
 $r\ge\|x\|_p$ and $s\le20\err_2^m(z)$. It is therefore enough to bound the
@@ -169,7 +169,7 @@ simple condition is not met or vice versa.
 
 Three things can go wrong. First, if $s>m^{1/2}\beta r$ the algorithm
 fails. This is only a problem for our calculation if it should, in fact,
-output the index $i$. Lemma~\ref{abort} bounds the conditional
+output the index $i$. \autoref{abort} bounds the conditional
 probability of this happening.
 
 Having dealt with the $s>\beta m^{1/2}r$ case we may assume now $s\le\beta

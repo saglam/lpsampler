@@ -48,7 +48,7 @@ understood.
 For instance the classical reservoir sampling \cite{Knuth1969}
 from the 60's (attributed to Alan G.~Waterman) gives a simple
 solution as follows. Given a pair $(i,u)$, indicating an
-addition of $u$ to the $i$-th coordinate of the underlying
+addition of $u$ to the $i$th coordinate of the underlying
 vector $x$, the sampler having maintained $s$, the sum of the
 updates seen so far, replaces the current sample with $i$ with
 probability $u/s$, otherwise does nothing and moves to the next
@@ -67,13 +67,13 @@ Before stating their results we give a formal definition of
 $L_p$-samplers.
 
 \begin{definition}
-Let $x \in \mathbb{R}^n$ be a non-zero vector. For $p>0$ we call
+Let $x \in \reals^n$ be a non-zero vector. For $p>0$ we call
 the {\em $L_p$ distribution} corresponding to $x$ the
 distribution on $[n]$ that takes $i$ with probability
 \begin{align*}
   \frac{\abs{x_i}^p}{\abs{x}_p^p},
 \end{align*}
-with $\abs{x}_p=(\sum_{i=1}^n|x_i|^p)^{1/p}$. For $p=0$, 
+with $\abs{x}_p=\nparen{\sum_{i=1}^n|x_i|^p}^{1/p}$. For $p=0$, 
 the $L_0$ distribution corresponding to $x$ is the uniform 
 distribution over the non-zero coordinates of $x$.
 \end{definition}
