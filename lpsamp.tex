@@ -1,4 +1,4 @@
-% !TeX root = main.tex
+% !TeX root = lpsampler.tex
 \section{The $L_p$ Sampler}
 \label{sec:lpsamp}
 In this section, we present our $L_p$ sampler algorithm. In the following,
@@ -11,7 +11,7 @@ going to use. Both are based on maintaining $L(x)$
 for a well chosen random linear map
 $L:\mathbb R^n\to\mathbb R^{n'}$ with $n'<n$.
 
-The {\em count-sketch} algorithm \cite{CharikarCF04} is so simple we cannot resist the
+The {\em count-sketch} algorithm \cite{CharikarCF2004} is so simple we cannot resist the
 temptation to define it here. For parameter $m$, the count-sketch algorithm
 works as follows. It selects independent samples $h_j:[n]\to[6m]$ and
 $g_j:[n]\to\{1,-1\}$ from pairwise independent uniform hash families for
@@ -22,10 +22,10 @@ $x^*\in\mathbb R^n$ as an approximation of $x$ with
 $x^*_i=\hbox{median}(g_j(i)y_{h(i),j}:j\in[l])$ for $i\in[n]$.
 
 The performance guarantee of the count-sketch algorithm is as follows.
-(For a compact proof see a recent survey by Gilbert and Indyk \cite{GilbertI10}.) 
+(For a compact proof see a recent survey by Gilbert and Indyk \cite{GilbertI2010}.) 
 
 \begin{lemma}
-[Charikar et al.~\cite{CharikarCF04}]
+[Charikar et al.~\cite{CharikarCF2004}]
 \label{c-s}
 For any $x\in\mathbb R^n$ and $m\ge1$ we have
 $|x_i-x^*_i|\le\err_2^m(x)/m^{1/2}$
@@ -42,7 +42,7 @@ remaining $n-m$ coordinates).
 We will also need the following result for the estimation of $L_p$ norms.
 
 \begin{lemma}
-[Kane et al.~\cite{KaneNPW}]
+[Kane et al.~\cite{KaneNPW2010}]
 \label{norm}
 For any $p\in(0,2]$ there is a streaming algorithm based on a random linear
 map $L:\mathbb R^n\to\mathbb R^l$ with $l=O(\log n)$ that outputs a value $r$
@@ -258,7 +258,7 @@ $p$, especially that $1/(2-p)$, $1/p$ and $1/|1-p|$ factors come in. The last
 can
 always be replaced by a $\log(1/\epsilon)$ factor but the former ones are
 harder to handle. For $p=2$ an extra $\log n$ factor seems to be necessary for
-an algorithm along these lines, see \cite{AndoniKO10}.
+an algorithm along these lines, see \cite{AndoniKO2010}.
 
 As we will see in Theorem~\ref{lpl}, our space bound is tight for $\epsilon$
 and $\delta$ constants. Note that the lower bound holds also if we only

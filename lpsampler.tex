@@ -1,5 +1,6 @@
-\documentclass[11pt,letterpaper]{article}
+\documentclass[10pt,letterpaper]{article}
 
+\usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage[hmargin=3.4cm,vmargin=3.2cm]{geometry}
 \usepackage{authblk}
@@ -7,6 +8,7 @@
 \usepackage{sectsty}
 \usepackage[font=small,labelfont=small]{caption}
 \usepackage[usenames]{xcolor}
+\usepackage{aliascnt}
 \definecolor{Blue}{RGB}{0, 38, 105}
 \definecolor{Green}{RGB}{49, 127, 52}
 \usepackage{hyperref}
@@ -18,70 +20,46 @@
     urlcolor=Blue
 }
 
-\newtheorem{definition}{Definition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{theorem}{Theorem}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{conjecture}{Conjecture}
-\theoremstyle{remark}
-\newtheorem*{remark}{Remark}
+\include{definitions/math}
+\include{definitions/fields}
+\include{definitions/theoremlike}
+\include{definitions/probability}
+\include{definitions/entropy}
+\include{definitions/linearalgebra}
+\include{definitions/citations}
+\addbibresource{references/main.bib}
 
-\title{\Large\bf Tight Bounds for $L_p$ Samplers, Finding Duplicates in
+\title{\Large\bf
+  Tight Bounds for $L_p$ Samplers, Finding Duplicates in
   Streams, and Related Problems}
 \renewcommand\Authfont{\normalsize}
 \renewcommand\Affilfont{\small}
 \author[1]{Hossein Jowhari}
-\author[1]{Mert Sa\u{g}lam}
+\author[1]{Mert Sağlam}
 \affil[1]{Simon Fraser University, Burnaby, Canada}
-\author[1,2]{G\'abor Tardos}
-\affil[2]{R\'enyi Institute of Mathematics, Budapest, Hungary}
+\author[1,2]{Gábor Tardos}
+\affil[2]{Rényi Institute of Mathematics, Budapest, Hungary}
 \date{}
 
-\DeclareMathOperator*{\E}{\mathbb{E}}
 \DeclareMathOperator{\R}{R}
 \DeclareMathOperator{\err}{Err}
 \DeclareMathOperator{\UR}{UR}
 \DeclareMathOperator{\URn}{UR^n}
 \DeclareMathOperator{\polylog}{polylog}
 \DeclareMathOperator{\poly}{poly}
-\DeclareMathOperator*{\Ent}{H}
-\DeclareMathOperator*{\BEnt}{H_2}
-\DeclareMathOperator*{\I}{I}
-
-\newcommand{\dmid}{\,\|\,}
-\newcommand{\emid}{\,|\,}
-
-\def\equationautorefname{Equation}
-\def\sectionautorefname{Section}
-\def\subsectionautorefname{Section}
-\def\lemmaautorefname{Lemma}
-\def\conjectureautorefname{Conjecture}
 
 \begin{document}
 \maketitle
 
-\input{abstract.tex}
-  
-\input{intro.tex}
+\input{abstract}
+\input{intro}
+\input{lpsamp}
+\input{l0samp}
+\input{duplicates}
+\input{lowerbounds}
 
-\input{lpsamp.tex}
+\printbibliography
 
-\input{l0samp.tex}
-
-\input{duplicates.tex}
-
-\input{lowerbounds.tex}
-
-\bibliography{main}{}
-\bibliographystyle{alpha}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%        Section: Appendix
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \appendix
 

@@ -1,221 +1,224 @@
-% !TeX root = main.tex
+% !TeX root = lpsampler.tex
 
 \section{Introduction}
 \label{sec:intro}
-Sampling has become an indispensable tool in analysing massive data sets,
-and particularly in processing data streams. In the past decade, 
-several sampling techniques have been proposed and studied for the data stream
-model \cite{BabcockDM02,DuffieldLT07,BravermanOZ09,CormodeMYZ10,MonemizadehW10,AndoniKO10}.
-In this work, we study {\em $L_p$-samplers}, a relatively new variant of
-space efficient samplers for data streams that
-was formally introduced by Monemizadeh and
-Woodruff in \cite{MonemizadehW10}. 
- Roughly speaking, given a stream of updates (additions and subtraction) 
-to the coordinates of an underlying vector $x \in \mathbb R^n$,
-an $L_p$-sampler processes the stream and 
-outputs a sample coordinate of $x$ where the
-$i$-th coordinate is picked with probability proportional to
-$|x_i|^p$.
+Sampling has become an indispensable tool in analysing massive
+data sets, and particularly in processing data streams. In the
+past decade, several sampling techniques have been proposed and
+studied for the data stream model \cite{BabcockDM2002,
+DuffieldLT2007, BravermanOZ2009, CormodeMYZ2010,
+MonemizadehW2010, AndoniKO2010}. In this work, we study {\em
+$L_p$-samplers}, a relatively new variant of space efficient
+samplers for data streams that was formally introduced by
+Monemizadeh and Woodruff in \cite{MonemizadehW2010}. Roughly
+speaking, given a stream of updates (additions and subtraction)
+to the coordinates of an underlying vector $x\in\reals^n$, an
+$L_p$-sampler processes the stream and outputs a sample
+coordinate of $x$ where the $i$-th coordinate is picked with
+probability proportional to $\abs{x_i}^p$.
 
-In \cite{MonemizadehW10}, it was observed that $L_p$-samplers lead to 
-alternative algorithms for many known streaming problems, including  
-heavy hitters and frequency moment estimation. Here in this paper, we
-focus on a specific application, namely finding duplicates in long streams;
-although our $L_p$ samplers  work and often give better space performance
-for all applications listed in \cite{MonemizadehW10}.
-We refer the reader to \cite{MonemizadehW10} and \cite{AndoniKO10} 
+In \cite{MonemizadehW2010}, it was observed that $L_p$-samplers
+lead to alternative algorithms for many known streaming
+problems, including heavy hitters and frequency moment
+estimation. Here in this paper, we focus on a specific
+application, namely finding duplicates in long streams; although
+our $L_p$ samplers work and often give better space performance
+for all applications listed in \cite{MonemizadehW2010}. We refer
+the reader to \cite{MonemizadehW2010} and \cite{AndoniKO2010}
 for further applications of $L_p$-samplers.
 
-%$L_p$ samplers handle both insertions and deletions of data
- %and are shown to be very useful in designing streaming algorithms in general.\
+% $L_p$ samplers handle both insertions and deletions of data
+% and are shown to be very useful in designing streaming 
+% algorithms in general.
 
-Observe that we allow both negative and positive updates to the coordinates of the underlying vector.
-In the case where only positive updates are allowed and $p=1$, the problem is well understood.
-%Typically and in this paper, the input stream
-  %represents as a sequence of updates of
-  %the form $(i,u)$, with $i \in [n]=\{1,\ldots,n\}$, that indicates
-  %an addition of $u \in [-M,M]$ to $i$-th coordinate of
-   %an initially zero vector $x \in \mathbb R^{n}$. 
-   %A basic problem in the processing of update
-    %streams is to maintain
- % samples from $x$, where $i$-th coordinate is picked with 
-  %probability proportional to $\frac{|x_i|}{\|x\|_1}$.
-   %Sampling in the case of only positive updates is well understood.  
-    For instance the classical reservoir sampling \cite{Knuth69} from the 60's
-    (attributed to Alan G.~Waterman) gives a simple 
-    solution as follows. Given a pair $(i,u)$, 
-    indicating an addition of $u$ to the  $i$-th coordinate of 
-    the underlying vector $x$, the sampler having maintained $s$, the sum of the 
-    updates seen so far, replaces
-     the current sample with $i$ with probability $u/s$, otherwise does nothing 
-     and moves to the next update. It is easy to verify that this is a perfect
-     $L_1$-sampler and the space usage is only $O(1)$ words.
+Observe that we allow both negative and positive updates to the
+coordinates of the underlying vector. In the case where only
+positive updates are allowed and $p=1$, the problem is well
+understood.
+% Typically and in this paper, the input stream
+% represents as a sequence of updates of
+% the form $(i,u)$, with $i \in [n]=\{1,\ldots,n\}$, that indicates
+% an addition of $u \in [-M,M]$ to $i$-th coordinate of
+% an initially zero vector $x \in \mathbb R^{n}$. 
+% A basic problem in the processing of update
+% streams is to maintain
+% samples from $x$, where $i$-th coordinate is picked with 
+% probability proportional to $\frac{|x_i|}{\|x\|_1}$.
+% Sampling in the case of only positive updates is well understood.  
+For instance the classical reservoir sampling \cite{Knuth1969}
+from the 60's (attributed to Alan G.~Waterman) gives a simple
+solution as follows. Given a pair $(i,u)$, indicating an
+addition of $u$ to the $i$-th coordinate of the underlying
+vector $x$, the sampler having maintained $s$, the sum of the
+updates seen so far, replaces the current sample with $i$ with
+probability $u/s$, otherwise does nothing and moves to the next
+update. It is easy to verify that this is a perfect
+$L_1$-sampler and the space usage is only $O(1)$ words.
     
-   With the presence of negative updates, sampling becomes a non-trivial problem. In this case,
-   it is not clear at all how to maintain samples without keeping track of the updates
-    to the individual coordinates. In fact, the question
-    regarding the mere existence of such samplers was raised few years ago by Cormode,
-    Muthukrishnan, and Rozenbaum in \cite{CormodeMR05}. In SODA 2010, 
-    Monemizadeh and Woodruff \cite{MonemizadehW10} answered this question
-    affirmatively, however in an approximate sense. Before stating 
-     their results we give a formal definition of 
-    $L_p$-samplers.
+With the presence of negative updates, sampling becomes a
+non-trivial problem. In this case, it is not clear at all how to
+maintain samples without keeping track of the updates to the
+individual coordinates. In fact, the question regarding the mere
+existence of such samplers was raised few years ago by Cormode,
+Muthukrishnan, and Rozenbaum in \cite{CormodeMR2005}. In SODA
+2010, Monemizadeh and Woodruff \cite{MonemizadehW2010} answered
+this question affirmatively, however in an approximate sense.
+Before stating their results we give a formal definition of
+$L_p$-samplers.
 
 \begin{definition}
-Let $x \in \mathbb{R}^n$ be a non-zero vector. For
-$p>0$ we call the {\em $L_p$ distribution} corresponding to $x$ the
+Let $x \in \mathbb{R}^n$ be a non-zero vector. For $p>0$ we call
+the {\em $L_p$ distribution} corresponding to $x$ the
 distribution on $[n]$ that takes $i$ with probability
-$$\frac{|x_i|^p}{\|x\|_p^p},$$
-with $\|x\|_p=(\sum_{i=1}^n|x_i|^p)^{1/p}$. For $p=0$,
-the $L_0$ distribution
-corresponding to $x$ is the uniform distribution over the non-zero coordinates
-of $x$.
+\begin{align*}
+  \frac{\abs{x_i}^p}{\abs{x}_p^p},
+\end{align*}
+with $\abs{x}_p=(\sum_{i=1}^n|x_i|^p)^{1/p}$. For $p=0$, 
+the $L_0$ distribution corresponding to $x$ is the uniform 
+distribution over the non-zero coordinates of $x$.
 \end{definition}
 
-We call a streaming algorithm a {\em perfect $L_p$-sampler} if it outputs an
-index according to this distribution and fails only if $x$ is the zero
-vector. An approximate $L_p$-sampler may fail but the distribution of its
-output should be close to the $L_p$ distribution. In particular, we speak of an $\epsilon$ relative
-error $L_p$-sampler if, conditioned on no failure, it outputs the index $i$
-with probability $(1\pm\epsilon)|x_i|^p/\|x\|_p^p+O(n^{-c})$, where $c$ is an
+We call a streaming algorithm a {\em perfect $L_p$-sampler} if
+it outputs an index according to this distribution and fails
+only if $x$ is the zero vector. An approximate $L_p$-sampler may
+fail but the distribution of its output should be close to the
+$L_p$ distribution. In particular, we speak of an $\epsilon$
+relative error $L_p$-sampler if, conditioned on no failure, it
+outputs the index $i$ with probability
+$(1\pm\epsilon)|x_i|^p/\|x\|_p^p+O(n^{-c})$, where $c$ is an
 arbitrary constant. For $p=0$ the corresponding formula is
-$(1\pm\epsilon)/k+O(n^{-c})$, where $k$ is the number of non-zero coordinates
-in $x$. Unless stated otherwise we assume
+$(1\pm\epsilon)/k+O(n^{-c})$, where $k$ is the number of
+non-zero coordinates in $x$. Unless stated otherwise we assume
 that the failure probability is at most $1/2$.
 
-In this definition one can consider $c$ to be 2, but all existing
-constructions of $L_p$-samplers work for an arbitrary $c$ with just a
-constant factor increase in the space, so we will not specify $c$ in the
-following and ignore errors of probability $n^{-c}$.
+In this definition one can consider $c$ to be 2, but all
+existing constructions of $L_p$-samplers work for an arbitrary
+$c$ with just a constant factor increase in the space, so we
+will not specify $c$ in the following and ignore errors of
+probability $n^{-c}$.
  
-%\paragraph{Previous Works on $L_p$ sampling.} The authors in \cite{MonemizadehW10}, gave
+% \paragraph{Previous Works on $L_p$ sampling.}
+% The authors in \cite{MonemizadehW2010}, gave
 % various upper bounds for $L_p$ samplers. In particular, for
+
 \paragraph{Previous work.} 
-A zero relative error $L_0$-sampler which uses $O(\log^3 n)$ bits was shown in \cite{FrahlingIS05}. 
-In \cite{MonemizadehW10}, the authors gave an $\epsilon$ relative error
-$L_p$-sampler for $p \in [0,2]$ which uses $\poly(\epsilon^{-1},\log n)$ space. They also showed 
-  a 2-pass $O(\polylog n)$ space zero relative error $L_p$-sampler for any $p\in [0,2]$. In addition
-  to these, they demonstrated that $L_p$-samplers can be used as a black-box to obtain
-   streaming algorithms for other problems such as $L_p$ estimation (for $p >2$), heavy hitters, 
-   and cascaded norms \cite{JayramW09}.
-   Unfortunately, due to the large exponents in their bounds, the
-  $L_p$-samplers given there do not lead to efficient solutions for the aforementioned applications.
+A zero relative error $L_0$-sampler which uses $O(\log^3 n)$
+bits was shown in \cite{FrahlingIS2005}. In
+\cite{MonemizadehW2010}, the authors gave an $\epsilon$ relative
+error $L_p$-sampler for $p \in [0,2]$ which uses
+$\poly(\epsilon^{-1},\log n)$ space. They also showed a 2-pass
+$O(\polylog n)$ space zero relative error $L_p$-sampler for any
+$p\in [0,2]$. In addition to these, they demonstrated that
+$L_p$-samplers can be used as a black-box to obtain streaming
+algorithms for other problems such as $L_p$ estimation (for $p
+>2$), heavy hitters, and cascaded norms \cite{JayramW2009}.
+Unfortunately, due to the large exponents in their bounds, the
+$L_p$-samplers given there do not lead to efficient solutions
+for the aforementioned applications.
   
-  Very recently, Andoni, Krauthgamer and Onak in %an arxiv submission %-Mert: I haven't seen people referring to archive in the paper, but if you like it that way lets put it back.
-\cite{AndoniKO10} improved the results of \cite{MonemizadehW10} 
- considerably. Through the adaptation of %-Mert: Also, I'm  could not be sure about 'improve the situation'. Do you think ameliorate better?
-  a generic and simple method, named {\it precision sampling}, they managed
-   to bring down the space upper bounds to $O(\frac1{\epsilon^p}\log^3 n)$ bits
-   for $\epsilon$ relative error $L_p$-samplers for $p \in [1,2]$. Roughly speaking, the idea of precision
-  sampling is to scale the input vector with random coefficients so that the $i$-th coordinate
-  becomes the maximum with probability roughly proportional to $|x_i|^p$. Moreover the maximum (heavy)
-   coordinate is found through a small-space heavy hitter algorithm. In more detail,
-    the input vector $(x_1,\ldots,x_n)$ is scaled 
-   by random coefficients $(t_1^{-1},\ldots,t_n^{-1})$, where each $t_i$ is picked uniformly 
-   at random from $[0,1]$. Let $z=(x_1t_1^{-1},\ldots,x_nt_n^{-1})$ be the 
-   scaled vector. %Notice that the random coefficients are chosen independent of $x$
-   %and from a small probability space. Also s
-%-Mert: Here small probability space seemed to be a bit confusing to me.
-%-Mert: On the other hand, if we try to explain cutting off the distribution at n^4, this will take too much space. I left it out for now.
-%Since
- %  the mapping is linear, additions and subtraction from $x$ can
- %  be handled easily by storing random bits needed. 
- The 
-   important observation is $\Pr[t_i^{-1} \ge t] =1/t$ 
-   and hence, for instance,  by replacing $t$ with 
-   $\|x\|_1/|x_i|$, we get $\Pr[|z_i| \ge \|x\|_1] = |x_i|/\|x\|_1$. (In the
-   same manner, one can scale $x_i$ by $t_i^{-1/p}$
-   instead of $t_i^{-1}$ and get a similar result for general $p$.) %It follows,
-  % sacrificing a bit of precision, with this method, we
-%  only need to know a constant factor approximation of
-It turns out, we only need to we have a constant approximation to
-%-Mert: If we settle for a constant approximation of the norm, I think, we don't lose precision. We just need to repeat more.
-%-Mert: So i changed this accordingly. 
-$\|x\|_1$ and look for a coordinate in $z$ that has reached a
-   limit of $\Omega(\|x\|_1)$. On the other hand it is shown that the heaviest coordinate in $z$ has
-   a weight of $\Omega(\log^{-1}{n})\|z\|_1$ (with constant probability), and thus
-   a small-space heavy hitter computation can be used to find the maximum. In particular, 
-   the $L_p$-sampler of \cite{AndoniKO10} adapts the
-   popular {\it count-sketch} scheme \cite{CharikarCF04} for this purpose.
-   % Upper bounding $\E[t_i^{-1}]$ by 
-   %$O(\log n)$ (for a bounded version $t_i$) and assuming the space usage of
-   % $O(\phi^{-1}\log^2 n)$ for finding a $\phi$-HH, the final space upper bound achieved in \cite{AndoniKO10} 
-   %becomes roughly $O(\frac{1}{\epsilon^p}\log^3 n)$ bits for $p \in [1,2]$.
-   \paragraph{Our contributions.} In %the main result of
-   this paper,  we  give $L_p$-samplers requiring only
-$O(\epsilon^{-p}\log^2n)$ space for $p \in (1,2)$. For $p \in (0,1)$,
-our space bound is  $O(\epsilon^{-1}\log^2n)$, while for the $p=1$ case we have
-an $O(\log(1/\epsilon)\epsilon^{-1}\log^2n)$ space algorithm.
-   %improve the space usage of $L_p$ samplers to $O(\epsilon^{-\max\{1,p\}}\log^2 n)$ bits
-   %for $p \in (0,2)$ with an extra $\log(1/\epsilon)$
-   %factor appearing in our bounds in the $p=1$ case (Theorem \ref{thm:sampler}).
-    In essence, our sampler follows the basic structure of the
-     precision sampling method explained above. % namely scaling each coordinate by a random real and finding 
-%      the heavy hitters. 
-      However compared to \cite{AndoniKO10}, we
-      do a sharper analysis of the error terms in the count-sketch, and through
-      %some modifications,
-    additional ideas, we manage to get rid of a log factor
-      and preserve the previous dependence on $\epsilon$. 
-      Roughly speaking, we use the fact that 
-      the error term in the count-sketch is bounded by the $L_2$ 
-      norm of the tail distribution of $z$ (the heavy coordinates do not contribute). On
-      the other hand, taking 
-     the distribution of the random coefficients into account, we
-     bound this by $O(\|x\|_p)$, which enables us to save a 
-     log factor. Additionally, to preserve
-      the dependence on $\epsilon$, we have to use a slightly more 
-     powerful source of randomness for choosing the scaling factors
-     (in contrast with the pairwise-independence of \cite{AndoniKO10}), and 
-     take care of some subtle issues regarding the conditioning on
-       the error terms which are not handled in the previous work 
-       (Lemma \ref{abort}).
+Very recently, Andoni, Krauthgamer and Onak in \cite{AndoniKO2010}
+improved the results of \cite{MonemizadehW2010} considerably.
+Through the adaptation of a generic and simple method, named
+{\it precision sampling}, they managed to bring down the space
+upper bounds to $O(\frac1{\epsilon^p}\log^3 n)$ bits for
+$\epsilon$ relative error $L_p$-samplers for $p \in [1,2]$.
+Roughly speaking, the idea of precision sampling is to scale the
+input vector with random coefficients so that the $i$-th
+coordinate becomes the maximum with probability roughly
+proportional to $|x_i|^p$. Moreover the maximum (heavy)
+coordinate is found through a small-space heavy hitter
+algorithm. In more detail, the input vector $(x_1,\ldots,x_n)$
+is scaled by random coefficients $(t_1^{-1},\ldots,t_n^{-1})$,
+where each $t_i$ is picked uniformly at random from $[0,1]$. Let
+$z=(x_1t_1^{-1},\ldots,x_nt_n^{-1})$ be the scaled vector. The
+important observation is $\Pr[t_i^{-1} \ge t] =1/t$ and hence,
+for instance, by replacing $t$ with $\|x\|_1/|x_i|$, we get
+$\Pr[|z_i| \ge \|x\|_1] = |x_i|/\|x\|_1$. (In the same manner,
+one can scale $x_i$ by $t_i^{-1/p}$ instead of $t_i^{-1}$ and
+get a similar result for general $p$.) It turns out, we only
+need to we have a constant approximation to $\|x\|_1$ and look
+for a coordinate in $z$ that has reached a limit of
+$\Omega(\|x\|_1)$. On the other hand it is shown that the
+heaviest coordinate in $z$ has a weight of
+$\Omega(\log^{-1}{n})\|z\|_1$ (with constant probability), and
+thus a small-space heavy hitter computation can be used to find
+the maximum. In particular, the $L_p$-sampler of
+\cite{AndoniKO2010} adapts the popular {\it count-sketch} scheme
+\cite{CharikarCF2004} for this purpose.
+
+\paragraph{Our contributions.}
+In this paper, we give $L_p$-samplers requiring only
+$O(\epsilon^{-p}\log^2n)$ space for $p \in (1,2)$. For $p \in
+(0,1)$, our space bound is $O(\epsilon^{-1}\log^2n)$, while for
+the $p=1$ case we have an
+$O(\log(1/\epsilon)\epsilon^{-1}\log^2n)$ space algorithm. In
+essence, our sampler follows the basic structure of the
+precision sampling method explained above. However compared to
+\cite{AndoniKO2010}, we do a sharper analysis of the error terms
+in the count-sketch, and through additional ideas, we manage to
+get rid of a log factor and preserve the previous dependence on
+$\epsilon$. Roughly speaking, we use the fact that the error
+term in the count-sketch is bounded by the $L_2$ norm of the
+tail distribution of $z$ (the heavy coordinates do not
+contribute). On the other hand, taking the distribution of the
+random coefficients into account, we bound this by $O(\|x\|_p)$,
+which enables us to save a log factor. Additionally, to preserve
+the dependence on $\epsilon$, we have to use a slightly more
+powerful source of randomness for choosing the scaling factors
+(in contrast with the pairwise-independence of
+\cite{AndoniKO2010}), and take care of some subtle issues
+regarding the conditioning on the error terms which are not
+handled in the previous work (\autoref{abort}).
   
 % For $p$ near zero, the method of precision sampling
-  % becomes intractable. The reason being $x_i$
-   %is multiplied by $t_i^{-1/p}$ which clearly rules out $p=0$. 
-   %For this special case, we present an algorithm using a 
-   %completely different approach.
-     
-   As $p$ approaches zero, precision sampling becomes very inefficient, as
-  the random coefficients $t_i^{-1/p}$ tend to infinity. For the $p=0$ case,
- we present a completely different algorithm. 
-   Briefly, our $L_0$-sampler tries to 
-   detect a non-zero
-   coordinate by picking random subsets of $[n]$.
-   The non-zero coordinates are found
-   by an exact sparse recovery procedure and Nisan's PRG \cite{Nisan} 
-   is applied to decrease the randomness involved.
-   Our $O(\log^2 n)$ space bound compares favorably to the previous algorithms, 
-   which use respectively $O(\log^3 n)$ space \cite{FrahlingIS05} 
-   and $\poly(\log n,\epsilon^{-1})$  space \cite{MonemizadehW10} 
-   (the latter one gives only $\epsilon$-relative error sampling).
-%In comparison with the previous $\epsilon$ relative error $L_0$-sampler
-  % due to Monemizadeh et al., our algorithm gives
-    %zero-relative error guarantees and the space bound is $O(\log^2 n)$ bits.
+% becomes intractable. The reason being $x_i$
+% is multiplied by $t_i^{-1/p}$ which clearly rules out $p=0$. 
+% For this special case, we present an algorithm using a 
+% completely different approach.
+  
+As $p$ approaches zero, precision sampling becomes very
+inefficient, as the random coefficients $t_i^{-1/p}$ tend to
+infinity. For the $p=0$ case, we present a completely different
+algorithm. Briefly, our $L_0$-sampler tries to detect a non-zero
+coordinate by picking random subsets of $[n]$. The non-zero
+coordinates are found by an exact sparse recovery procedure and
+Nisan's PRG \cite{Nisan1990} is applied to decrease the
+randomness involved. Our $O(\log^2 n)$ space bound compares
+favorably to the previous algorithms, which use respectively
+$O(\log^3 n)$ space \cite{FrahlingIS2005} and 
+$\poly(\log n,\epsilon^{-1})$ space \cite{MonemizadehW2010} 
+(the latter one gives only $\epsilon$-relative error sampling).
+% In comparison with the previous $\epsilon$ relative error $L_0$-sampler
+% due to Monemizadeh et al., our algorithm gives
+% zero-relative error guarantees and the space bound is $O(\log^2 n)$ bits.
 
-    In \autoref{sec:lb}, we prove that sampling from 0, $\pm1$
-   vectors requires $\Omega(\log^2 n)$ space, by a reduction from 
-   the communication complexity problem augmented indexing. 
-   In this special case $p$ is not relevant for $L_p$-sampling, hence 
-   this shows that our $L_0$-sampling algorithm uses the optimal space up to constant 
-   factors, and our $L_p$-sampler for $p\in(0,2)$ has the optimal space (up to constant factors) for $\epsilon>0$ a constant. 
+In \autoref{sec:lb}, we prove that sampling from 0, $\pm1$
+vectors requires $\Omega(\log^2 n)$ space, by a reduction from
+the communication complexity problem augmented indexing. In this
+special case $p$ is not relevant for $L_p$-sampling, hence this
+shows that our $L_0$-sampling algorithm uses the optimal space
+up to constant factors, and our $L_p$-sampler for $p\in(0,2)$
+has the optimal space (up to constant factors) for $\epsilon>0$
+a constant.
 %To prove the optimality of our upper bounds for $L_p$ samplers, 
 %we study the streaming and communication complexity of {\it finding
 %duplicates} in long streams.Formally, 
 
 Given a stream of length $n+1$ over the alphabet $[n]$, finding
-duplicates problem asks to output some $a\in[n]$ that has appeared
-at least twice in the stream. Observe that by the pigeon-hole principle, 
-such $a$ always exists. Prior to our work, the best upper bound
-for finding duplicates was due to  Gopalan
-and Radhakrishnan \cite{GopalanJaikumar}, who gave a one-pass $O(\log^3
-n)$ bits randomized algorithm with constant failure rate.
-Here we settle the one-pass complexity of this problem by 
-giving an $O(\log^2 n)$ space algorithm via a direct application of our $L_1$
-sampler, and by giving an $\Omega(\log^2 n)$ lower bound afterwards. Combined with a sparse recovery procedure,
-our solution also generalizes to a near-optimal $O(\log^2n+s\log n)$ space
-algorithm for finding duplicates in streams of length $n-s$, improving on the $O(s\log^3 n)$ result of \cite{GopalanJaikumar}.
+duplicates problem asks to output some $a\in[n]$ that has
+appeared at least twice in the stream. Observe that by the
+pigeon-hole principle, such $a$ always exists. Prior to our
+work, the best upper bound for finding duplicates was due to
+Gopalan and Radhakrishnan \cite{GopalanR2009}, who gave a
+one-pass $O(\log^3 n)$ bits randomized algorithm with constant
+failure rate. Here we settle the one-pass complexity of this
+problem by giving an $O(\log^2 n)$ space algorithm via a direct
+application of our $L_1$ sampler, and by giving an
+$\Omega(\log^2 n)$ lower bound afterwards. Combined with a
+sparse recovery procedure, our solution also generalizes to a
+near-optimal $O(\log^2n+s\log n)$ space algorithm for finding
+duplicates in streams of length $n-s$, improving on the
+$O(s\log^3 n)$ result of \cite{GopalanR2009}.
   
 
 %Next we obtain a $\Omega(\log^2n)$ space lower bound
@@ -223,7 +226,7 @@ algorithm for finding duplicates in streams of length $n-s$, improving on the $O
 %duplicates (Theorem \ref{thm:duplb}). This problem,
 %in the 2-player communication setting, happens to be
 %a well-studied problem in the sphere of 
-% deterministic protocols \cite{TardosZwick,KarchmerWigderson}. Known
+% deterministic protocols \cite{TardosZ1997,KarchmerWigderson}. Known
 %as {\it universal relations}, in this 2-player game, each of Alice and Bob
 % gets a vector $x,y\in\{0,1\}^n$ respectively with the promise that $x\neq y$.
 %The players send each other messages and the last player to receive
@@ -245,38 +248,47 @@ algorithm for finding duplicates in streams of length $n-s$, improving on the $O
 %According to our knowledge, this is the first result of this kind for heavy hitters
 %under negative updates.   
 
-Finally, we prove lower bounds for the problem of finding heavy hitters in update streams, 
-which is closely related to the $L_p$-sampling problem. This lower bound is also obtained 
-by a reduction from the augment indexing and proves that any $L_p$ heavy 
-hitters algorithm (defined in Section \ref{sec:hh}) must use 
-$\Omega(\frac{1}{\phi^p}\log^2 n)$ space, even in the strict turnstile model. 
-Our lower bound essentially matches the known upper bounds \cite{CormodeM05,CharikarCF04,KaneNPW} which work in the general update model. 
+Finally, we prove lower bounds for the problem of finding heavy
+hitters in update streams, which is closely related to the
+$L_p$-sampling problem. This lower bound is also obtained by a
+reduction from the augment indexing and proves that any $L_p$
+heavy hitters algorithm (defined in Section \ref{sec:hh}) must
+use $\Omega(\frac{1}{\phi^p}\log^2 n)$ space, even in the strict
+turnstile model. Our lower bound essentially matches the known
+upper bounds \cite{CormodeM2005b,CharikarCF2004,KaneNPW2010}
+which work in the general update model.
 
-\paragraph{Related work.} In \cite{BabcockDM02,BravermanOZ09}, the authors have 
-studied sampling from sliding windows, and the recent paper
-of Cormode et al.\ \cite{CormodeMYZ10} generalizes the classical reservoir sampling 
-to distributed streams. These works only support insertion streams.
- The basic idea of random scaling used in \cite{AndoniKO10} and in our paper has appeared earlier in
- the priority sampling technique \cite{DuffieldLT07,CohenDKLT09}, where the focus is
- to estimate the weight of certain subsets of a vector, defined by a sequence of positive updates.
+\paragraph{Related work.}
+In \cite{BabcockDM2002, BravermanOZ2009}, the authors have
+studied sampling from sliding windows, and the recent paper of
+Cormode et al.\ \cite{CormodeMYZ2010} generalizes the classical
+reservoir sampling to distributed streams. These works only
+support insertion streams. The basic idea of random scaling used
+in \cite{AndoniKO2010} and in our paper has appeared earlier in
+the priority sampling technique
+\cite{DuffieldLT2007,CohenDKLT2009}, where the focus is to
+estimate the weight of certain subsets of a vector, defined by a
+sequence of positive updates.
  
-Finding duplicates in streams was first considered 
-in the context of detecting fraud in click streams \cite{MetwallyAA05}. 
-Muthukrishnan in \cite{Muthukrishnan}
-asked whether this problem can be solved in 
-$O(\polylog n)$ space using a constant number of passes. In \cite{Tarui}, Tarui showed
-that any $k$-pass deterministic algorithm must use $\Omega(n^{\frac1{2k-1}})$
-space. 
-%Finally, Gopalan and Radhakrishnan gave a randomized $O(\log^3 n)$ space algorithm, answering the question posed by Muthukrishnan.
+Finding duplicates in streams was first considered in the
+context of detecting fraud in click streams
+\cite{MetwallyAA2005}. Muthukrishnan in \cite{Muthukrishnan2005}
+asked whether this problem can be solved in $O(\polylog n)$
+space using a constant number of passes. In \cite{Tarui2007},
+Tarui showed that any $k$-pass deterministic algorithm must use
+$\Omega(n^{\frac1{2k-1}})$ space.
+% Finally, Gopalan and Radhakrishnan gave a randomized 
+% $O(\log^3 n)$ space algorithm, answering the question posed 
+% by Muthukrishnan.
  
-Heavy hitter algorithms have been studied extensively. 
-The work of Berinde et al.\
-\cite{BerindeCIS09} gives tight lower bounds for heavy hitters under 
- insertion-only streams. We are not aware of similar works on
-general update streams, although the works of \cite{BaIPW10, WoodruffJ11},
- where the authors show lower bounds for respectively approximate
-sparse recovery, and Johnson-Lindenstrauss transforms (via augmented indexing) is closely related.    
-    
+Heavy hitter algorithms have been studied extensively. The work
+of Berinde et al.\ \cite{BerindeCIS2009} gives tight lower
+bounds for heavy hitters under insertion-only streams. We are
+not aware of similar works on general update streams, although
+the works of \cite{BaIPW2010, WoodruffJ2011}, where the authors
+show lower bounds for respectively approximate sparse recovery,
+and Johnson-Lindenstrauss transforms (via augmented indexing) is
+closely related.
 
 \paragraph{Notation.}
 %We write $[n]$ for the set $\{1,\ldots,n\}$.
@@ -289,53 +301,56 @@ sparse recovery, and Johnson-Lindenstrauss transforms (via augmented indexing) i
 %we are guaranteed that all coordinates of $x$ are non-negative at the end
 %(although negative updates are still allowed), in the general model such
 %guarantee does not exist. 
-We write $[n]$ for the set $\{1,\ldots,n\}$.
-An update stream is a sequence of tuples $(i,u)$, where $i\in [n]$ 
-and $u\in\mathbb R$. The stream of updates implicitly define an $n$-dimensional
-vector $x\in\mathbb R^n$ as follows. Initially, $x$ is the zero vector. An update of the form
-$(i,u)$ adds $u$ to the coordinate $x_i$ of $x$ (leaving the other coordinates unchanged).
-In the {\em strict turnstile model}
-we are guaranteed that all coordinates of $x$ are non-negative at the end
-of the stream
-(although negative updates are still allowed), in the general model such
-guarantee does not exist. Our
-algorithms (like most other algorithms in the literature) work by maintaining
-a linear sketch $L:\mathbb R^n\to\mathbb R^m$.
-When computing the space requirement of such a
-streaming algorithm, we assume all the updates are integers ($u\in\mathbb Z$)
-and the coordinates of the vector $x$ throughout the stream remain bounded by
-some value $M=\poly(n)$. We
-make sure that the matrix of $L$ has also polynomially bounded
-integer entries, this way maintaining $L(x)$ requires updating $m$ integer
-counters and requires $O(m\log n)$ bits with fast
-update time (especially since the matrices we consider are sparse). This
-discretization step is standard and thus we omit most details.
+We write $[n]$ for the set $\{1,\ldots,n\}$. An update stream is
+a sequence of tuples $(i,u)$, where $i\in [n]$ and $u\in\reals$.
+The stream of updates implicitly define an $n$-dimensional
+vector $x\in\reals^n$ as follows. Initially, $x$ is the zero
+vector. An update of the form $(i,u)$ adds $u$ to the coordinate
+$x_i$ of $x$ (leaving the other coordinates unchanged). In the
+{\em strict turnstile model} we are guaranteed that all
+coordinates of $x$ are non-negative at the end of the stream
+(although negative updates are still allowed), in the general
+model such guarantee does not exist. Our algorithms (like most
+other algorithms in the literature) work by maintaining a linear
+sketch $L\colon\reals^n\to\reals^m$. When computing the space
+requirement of such a streaming algorithm, we assume all the
+updates are integers ($u\in\mathbb Z$) and the coordinates of
+the vector $x$ throughout the stream remain bounded by some
+value $M=\poly(n)$. We make sure that the matrix of $L$ has also
+polynomially bounded integer entries, this way maintaining
+$L(x)$ requires updating $m$ integer counters and requires
+$O(m\log n)$ bits with fast update time (especially since the
+matrices we consider are sparse). This discretization step is
+standard and thus we omit most details.
 
-In the standard model for randomized streaming algorithms the random bits used
-(to generate the random linear map $L$, for example) are part of the space
-bound. In contrast, our lower bounds do not make any assumption on the working of the
-streaming algorithm and allow for the {\em random oracle model}, where the
-algorithm is allowed free access to a random string at any time. All lower
-bounds are proved through reductions from communication problems.
+In the standard model for randomized streaming algorithms the
+random bits used (to generate the random linear map $L$, for
+example) are part of the space bound. In contrast, our lower
+bounds do not make any assumption on the working of the
+streaming algorithm and allow for the {\em random oracle model},
+where the algorithm is allowed free access to a random string at
+any time. All lower bounds are proved through reductions from
+communication problems.
 
-We say an event happens with {\em low probability} if the probability can
-be made less than $n^{-c}$. Here $c>0$ is an arbitrary constant, for example
-one can set $c=2$. The actual value of $c$ has limited effect on the space
-of our algorithm: it changes only the unspecified constants hidden in the $O$
-notation. We will routinely ignore low probability events, sometime even
-$O(n)$ of them, which is okay as we leave $c$ unspecified.
-Events complementary to low probability events are referred to as {\em high
-probability} events.
+We say an event happens with {\em low probability} if the
+probability can be made less than $n^{-c}$. Here $c>0$ is an
+arbitrary constant, for example one can set $c=2$. The actual
+value of $c$ has limited effect on the space of our algorithm:
+it changes only the unspecified constants hidden in the $O$
+notation. We will routinely ignore low probability events,
+sometime even $O(n)$ of them, which is okay as we leave $c$
+unspecified. Events complementary to low probability events are
+referred to as {\em high probability} events.
 
-For $0\le m\le n$ we call the vector $x\in\mathbb R^n$ {\em $m$-sparse} if
-all but at most $m$ coordinates of $x$ are zero. We define
-$\err_2^m(x)=\min\|x-\hat x\|_2$, where $\hat x\in\mathbb R^n$ ranges over all
-the $m$-sparse vectors.
+For $0\le m\le n$ we call the vector $x\in\reals^n$ {\em
+$m$-sparse} if all but at most $m$ coordinates of $x$ are zero.
+We define $\err_2^m(x)=\min\lnorm{x-\hat x}{2}$, where $\hat
+x\in\reals^n$ ranges over all the $m$-sparse vectors.
 
 %\paragraph{Organization.} In Section 2 we present our $L_p$ samplers, in
 %Section 3 we apply it to the duplicates problem, while in the last section we
 %prove our lower bounds. For completeness we present a simple modification of
-%the heavy hitter algorithm of \cite{KaneNPW} in the Appendix.
+%the heavy hitter algorithm of \cite{KaneNPW2010} in the Appendix.
 
 %-Mert: I removed this for now as (1) space considerations (2) we gave some section numbers in Section 'Our Contribution', which will hopefully guide the reader
 

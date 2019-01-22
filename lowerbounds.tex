@@ -1,57 +1,63 @@
-% !TeX root = main.tex
+% !TeX root = lpsampler.tex
 \section{Lower Bounds}
 \label{sec:lb}
-All our lower bounds follow from the augmented indexing problem. This problem
-is defined as follows. Let $k$ and $m$ be positive integers.
-The first player Alice, is given a string $x\in[k]^m$, while the second player Bob
-is given an integer $i\in [m]$ and $x_j$ for $j<i$. Alice sends a single
-message to Bob and Bob should output $x_i$. 
+All our lower bounds follow from the augmented indexing problem.
+This problem is defined as follows. Let $k$ and $m$ be positive
+integers. The first player Alice, is given a string $x\in[k]^m$,
+while the second player Bob is given an integer $i\in [m]$ and
+$x_j$ for $j<i$. Alice sends a single message to Bob and Bob
+should output $x_i$.
 
 \begin{lemma}
-[Miltersen et al.~\cite{MiltersenNSW}]
+[Miltersen et al.\ \cite{MiltersenNSW1995}]
 \label{lem:ai}
-In any one-way protocol in the joint random source model with success
-probability at least $1-\delta>\frac{3}{2k}$, Alice must send a message of
-size $\Omega((1-\delta)m\log k)$.
+In any one-way protocol in the joint random source model with
+success probability at least $1-\delta>\frac{3}{2k}$, Alice must
+send a message of size $\Omega((1-\delta)m\log k)$.
 \end{lemma}
 
-We will use this lemma by reducing augmented indexing to other communication
-or streaming problems.
+We will use this lemma by reducing augmented indexing to other
+communication or streaming problems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %        Subsection: Universal relation
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Universal Relation}\label{sec:ur}
-Consider the following two player communication game.
-Alice gets a string $x\in\{0,1\}^n$, Bob gets $y\in\{0,1\}^n$ with
-  the promise that $x\neq y$. The players exchange 
-  messages and the last player to receive a message must
-   output an index $i\in [n]$ such that $x_i\neq y_i$. 
-  We call this the {\em universal relation communication problem} and denote it by $\URn$.
+\subsection{Universal Relation}
+\label{sec:ur}
+Consider the following two player communication game. Alice gets
+a string $x\in\{0,1\}^n$, Bob gets $y\in\{0,1\}^n$ with the
+promise that $x\neq y$. The players exchange messages and the
+last player to receive a message must output an index $i\in [n]$
+such that $x_i\neq y_i$. We call this the {\em universal
+relation communication problem} and denote it by $\URn$.
 
-This relation has been studied in detail for deterministic communication, as 
-it naturally arises in the context of
- Karchmer-Wigderson games \cite{KarchmerWigderson}. We note however
- that our definition is slightly unusual: in most settings both players must
- obtain the same index $i$ such that $x_i\neq y_i$, whereas we are satisfied
- with the last player to receive a message learning such an $i$. Clearly, the
- stronger requirement can be met in $\lceil\log n\rceil$ additional bits and
- one additional round. The additional bits are needed in deterministic case
- but we are not concerned with $O(\log n)$ terms for our bounds, so the two
- models are almost equivalent up to the shift of one in the number of rounds.
+This relation has been studied in detail for deterministic
+communication, as it naturally arises in the context of
+Karchmer-Wigderson games \cite{KarchmerW1988}. We note however
+that our definition is slightly unusual: in most settings both
+players must obtain the same index $i$ such that $x_i\neq y_i$,
+whereas we are satisfied with the last player to receive a
+message learning such an $i$. Clearly, the stronger requirement
+can be met in $\lceil\log n\rceil$ additional bits and one
+additional round. The additional bits are needed in
+deterministic case but we are not concerned with $O(\log n)$
+terms for our bounds, so the two models are almost equivalent up
+to the shift of one in the number of rounds.
 
-The best deterministic protocol for $\URn$ is due to 
- Tardos and Zwick~\cite{TardosZwick}. Improving a previous result 
- by Karchmer \cite{Karchmer}, they gave a 3 round deterministic protocol 
- using $n+2$ bits of communication with both players learning the same index
- $i$ and showed that $n+1$ bits is necessary for such a protocol. They also
- gave an $n-\lfloor\log n\rfloor+2$ bit 2 round deterministic protocol for our
- weaker version of the problem, which is also tight except for the $+2$
- term. They also gave an $n-\lfloor\log n\rfloor+4$ bit 4 round protocol, where
- both players find an index where $x$ and $y$ differ---but not necessarily
- the same index. This shows that finding the same difference is harder.
+The best deterministic protocol for $\URn$ is due to Tardos and
+Zwick~\cite{TardosZ1997}. Improving a previous result by
+Karchmer \cite{Karchmer1989}, they gave a 3 round deterministic
+protocol using $n+2$ bits of communication with both players
+learning the same index $i$ and showed that $n+1$ bits is
+necessary for such a protocol. They also gave an $n-\lfloor\log
+n\rfloor+2$ bit 2 round deterministic protocol for our weaker
+version of the problem, which is also tight except for the $+2$
+term. They also gave an $n-\lfloor\log n\rfloor+4$ bit 4 round
+protocol, where both players find an index where $x$ and $y$
+differ---but not necessarily the same index. This shows that
+finding the same difference is harder.
 
 Let $R^k_\delta(U)$ denote the $k$-round $\delta$-error communication
 complexity of the communication problem $U$. We write $R_\delta(U)$ to denote
@@ -80,7 +86,7 @@ single such set in the second round.
 
 We remark that along similar lines one can find an $O(\log n \log\log n\log1/\delta )$
 space two-pass zero relative error $L_0$-sampling algorithm, by estimating  $L_0$ 
-of the vector defined by the stream in the first pass using \cite{KaneNW10}. Next
+of the vector defined by the stream in the first pass using \cite{KaneNW2010}. Next
  we will show that the above proposition is best possible up to the $O(\log\delta^{-1})$
 terms. We start with an averaging lemma. The proof can be found in the Appendix.
 
@@ -297,9 +303,9 @@ In this part, we show a tight lower bound for the
 constant probability of error) for 
 the heavy hitter problem. First we briefly review the upper bounds.
 
-The count-median algorithm from \cite{CormodeM05} gives
+The count-median algorithm from \cite{CormodeM2005b} gives
  a $O(\phi^{-1}\log^2 n)$ space upper bound for the case of $p=1$.
-Here we note the count-sketch \cite{CharikarCF04} in fact 
+Here we note the count-sketch \cite{CharikarCF2004} in fact 
 gives a $O(\phi^{-p}\log^2 n)$ space upper bound for all $p \in (0,2]$.
 The case of $p=2$ easily follows from Lemma~\ref{c-s}. Let $d=\err^m_2(x)/m^{1/2}$.
 In general it holds $d \le ||x||_p/m^{1/p}$ for any
@@ -313,7 +319,7 @@ scheme gives the desired result.
 
 
 We remark that a similar upper bound for the heavy hitter problem is 
-shown in \cite{KaneNPW} (cf. Theorem 1), albeit via different arguments.  
+shown in \cite{KaneNPW2010} (cf.\ Theorem 1), albeit via different arguments.  
  %at the cost of increasing the time to
  %produce the heavy hitter set. 
 %For sake of completeness, we briefly describe this modified algorithm in \ref{sec:hhUB}.  

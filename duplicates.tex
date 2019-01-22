@@ -1,4 +1,4 @@
-% !TeX root = main.tex
+% !TeX root = lpsampler.tex
 \section{Finding Duplicates}
 \label{sec:duplicates}
 Recall that, given a data stream of length $n+1$ over the alphabet $[n]$, finding
@@ -59,7 +59,7 @@ $\delta<1$ a constant.
 
 It is natural to study the duplicates problem for other ranges of
 parameters. Assume that we have a stream of length $n-s\le n$ over the
-alphabet $[n]$. For this problem, Gopalan et al.\ \cite{GopalanJaikumar} gave
+alphabet $[n]$. For this problem, Gopalan et al.\ \cite{GopalanR2009} gave
 an $O((s+1)\log^3 n)$ bits algorithm and an $\Omega(s)$ lower bound. Here we
 give an algorithm which uses $O(s\log n+\log^2 n)$ space.
 
@@ -107,7 +107,7 @@ Theorem~\ref{lps}, totaling $O(s\log n + \log^2n\log1/\delta)$ bits.
 \end{proof}
 
 Here we do not have a matching lower bound, but only the $\Omega(\log^2n+s)$ that
-follows from the $\Omega(s)$ bound in \cite{GopalanJaikumar} and our
+follows from the $\Omega(s)$ bound in \cite{GopalanR2009} and our
 $\Omega(\log^2 n)$ bound on the original version of the duplicates problem.
 
 We remark the last two theorems can be stated in a bit more general
